@@ -1,12 +1,14 @@
 import React from "react";
-import { Route, Routes, BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LandingPage } from "./routes/Landing";
+import { UpcomingEventsPage } from "./routes/UpcomingEvents";
 
-export const App = () => {
+const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />}></Route>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/upcoming" element={<UpcomingEventsPage />} />
       </Routes>
     </BrowserRouter>
   );
