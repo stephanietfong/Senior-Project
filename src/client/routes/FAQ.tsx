@@ -9,7 +9,7 @@ const FAQS: FAQ[] = [
     a: "We recommend events based on your selected interests, location, and events you’ve interacted with (Going/Maybe/Details). You can update your interests anytime.",
   },
   {
-    q: "What’s the difference between “Going” and “Maybe”?",
+    q: "What is the difference between “Going” and “Maybe”?",
     a: "“Going” means you plan to attend. “Maybe” saves the event so you remember it, but doesn’t fully commit you.",
   },
   {
@@ -77,10 +77,6 @@ export function FAQPage() {
           <span className="text-xl">←</span>
           <span className="text-sm">Back to Search</span>
         </button>
-
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff6a3d] font-bold text-white shadow-md">
-          V
-        </div>
       </div>
 
       {/*content*/}
