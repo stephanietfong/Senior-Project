@@ -1,24 +1,25 @@
-import React from "react";
-import { UpcomingEvent, UpcomingEventCard } from "./UpcomingEventCard";
+import { UpcomingEventCard } from "./UpcomingEventCard";
 
-type Props = {
+type UpcomingEvent = Parameters<typeof UpcomingEventCard>[0];
+
+export function EventSection({
+  title,
+  events,
+}: {
   title: string;
   events: UpcomingEvent[];
-  onDetails?: (eventId: string) => void;
-};
-
-export const EventSection: React.FC<Props> = ({ title, events, onDetails }) => {
-  if (events.length === 0) return null;
-
+}) {
   return (
-    <section className="eventSection">
-      <h2 className="sectionTitle">{title}</h2>
+    <section className="mt-6">
+      <h2 className="mb-3 text-center font-[Oswald] text-2xl text-black">
+        {title}
+      </h2>
 
-      <div className="eventList">
+      <div className="space-y-3">
         {events.map((e) => (
-          <UpcomingEventCard key={e.id} event={e} onDetails={onDetails} />
+          <UpcomingEventCard key={e.id} {...e} />
         ))}
       </div>
     </section>
   );
-};
+}
