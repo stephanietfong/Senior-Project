@@ -55,10 +55,6 @@ export function UpcomingEventsPage() {
           <span className="text-xl">←</span>
           <span className="text-sm">Back to Search</span>
         </button>
-
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#7d93c2] font-bold text-white shadow-md">
-          N
-        </div>
       </div>
 
       {/* content*/}
