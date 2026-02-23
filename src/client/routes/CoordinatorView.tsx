@@ -1,8 +1,6 @@
 import React from "react";
 import { PastEventCard, PastEvent } from "../components/PastEventCard";
 
-// Reuse an image you already have, or swap these imports to your assets
-
 export const CoordinatorViewPage = () => {
   const orgName = "University of Florida Swamphacks";
   const hostingSince = "01/01/2000";
@@ -29,58 +27,65 @@ export const CoordinatorViewPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-900 p-6">
-      {/* white panel */}
-      <div className="mx-auto w-full max-w-3xl overflow-hidden rounded-md bg-[#f7f1e6] shadow-lg">
-        {/* Header strip */}
-        <div className="border-b border-neutral-800 bg-[#f7f1e6] py-2 text-center text-lg font-medium text-neutral-900">
-          Header
-        </div>
+    <div className="py-4 px-20 text-black">
+      {/* Top row */}
+      <div className="my-10 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => window.history.back()}
+          className="bg-customDarkBlue py-2 px-4 font-semibold hover:opacity-90"
+        >
+          ← Back
+        </button>
 
-        {/* back row */}
-        <div className="flex items-center gap-3 border-b border-neutral-300 bg-[#f7f1e6] px-4 py-3">
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="text-sm text-neutral-800 hover:underline"
-          >
-            ← Back to Event
+        <div className="flex items-center gap-3">
+          <button className="bg-customGreen py-2 font-semibold px-4 hover:opacity-90">
+            Create Event +
+          </button>
+          <button className="bg-customDarkBlue py-2 px-4 font-semibold hover:opacity-90">
+            Manage
           </button>
         </div>
+      </div>
 
-        {/* org block */}
-        <div className="bg-[#f7f1e6] px-6 py-5">
-          <div className="flex items-center gap-4">
-            {/* big circle "logo" */}
-            <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-sky-500 bg-neutral-200 text-3xl font-semibold text-neutral-900">
+      {/* Centered content like a real dashboard */}
+      <div className="mx-auto w-full max-w-6xl flex flex-col gap-8">
+        {/* Org header card */}
+        <div className="bg-white rounded-2xl border border-black/10 shadow-sm p-6 font-redhat">
+          <div className="flex items-center gap-5">
+            {/* org "logo" */}
+            <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-customBlue bg-black/5 text-3xl font-semibold">
               S
             </div>
 
-            <div className="min-w-0">
-              <div className="truncate text-lg font-semibold text-neutral-900">
+            <div className="min-w-0 flex-1">
+              <p className="font-oswald text-4xl leading-tight truncate">
                 {orgName}
-              </div>
-              <div className="mt-1 flex items-center gap-2 text-sm text-neutral-700">
-                <span className="inline-block h-2 w-2 rotate-45 bg-sky-500" />
-                <span>Hosting events since {hostingSince}</span>
-              </div>
+              </p>
+              <p className="mt-1 text-sm text-black/60 italic">
+                Hosting events since {hostingSince}
+              </p>
             </div>
           </div>
+        </div>
 
-          {/* Past Events */}
-          <h2 className="mt-6 text-lg font-semibold text-neutral-900">
-            Past Events
-          </h2>
+        {/* Past events section */}
+        <div className="bg-white rounded-2xl border border-black/10 shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <p className="font-oswald text-3xl">Past Events</p>
 
-          <div className="mt-3 flex flex-col gap-4 pb-6">
+            {/* optional: right-side action */}
+            <button className="bg-customDarkBlue py-2 px-4 font-semibold hover:opacity-90">
+              View Analytics
+            </button>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-6">
             {pastEvents.map((e) => (
               <PastEventCard
                 key={e.id}
                 event={e}
-                onDetails={(id) => {
-                  console.log("details for", id);
-                  // later: navigate(`/events/${id}`) or open modal
-                }}
+                onDetails={(id) => console.log("details for", id)}
               />
             ))}
           </div>
