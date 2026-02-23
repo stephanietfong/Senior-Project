@@ -6,6 +6,7 @@ import { EventsPage } from "./routes/Events";
 import { LoginPage } from "./routes/login";
 import { SignUpPage } from "./routes/signup";
 import { VerificationPage } from "./routes/verification";
+import { FAQPage } from "./routes/FAQ";
 
 const App = () => {
   return (
@@ -17,6 +18,8 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/verification" element={<VerificationPage />} />
+        <Route path="/faq" element={<FAQPage />} />
+
       </Routes>
     </BrowserRouter>
   );
