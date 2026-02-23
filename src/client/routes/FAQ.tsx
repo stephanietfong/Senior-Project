@@ -56,36 +56,31 @@ const FAQS: FAQ[] = [
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   return (
-    <div className="rounded-md bg-[#d9d9d9] p-4 text-black shadow-sm">
-      <p className="font-semibold">Q: {q}</p>
-      <p className="mt-2 text-sm text-black/80">A: {a}</p>
+    <div className="bg-white rounded-2xl border border-black/10 shadow-sm p-6 font-redhat">
+      <p className="font-oswald text-2xl leading-snug">Q: {q}</p>
+      <p className="mt-3 text-sm text-black/80">A: {a}</p>
     </div>
   );
 }
 
 export function FAQPage() {
   return (
-    <div className="min-h-screen bg-[#b8c6e6] text-black">
-      {/*header*/}
-      <div className="sticky top-0 z-10 border-b-2 border-black bg-[#f6f0e6] px-4 py-3">
-        <h1 className="text-center font-[Oswald] text-3xl">FAQ</h1>
-      </div>
+    <div className="py-4 px-20 text-black">
+      <div className="my-10 flex items-center justify-between">
+        <p className="font-oswald text-5xl">FAQ</p>
 
-      {/* back + avatar*/}
-      <div className="flex items-center justify-between px-4 py-3">
-        <button className="flex items-center gap-2 text-black/80 hover:text-black">
-          <span className="text-xl">←</span>
-          <span className="text-sm">Back to Search</span>
+        <button
+          className="bg-customDarkBlue py-2 px-4 font-semibold hover:opacity-90"
+          onClick={() => window.history.back()}
+        >
+          ← Back
         </button>
       </div>
 
-      {/*content*/}
-      <div className="mx-auto w-full max-w-[420px] px-4 pb-10">
-        <div className="space-y-4">
-          {FAQS.map((item, idx) => (
-            <FAQItem key={idx} q={item.q} a={item.a} />
-          ))}
-        </div>
+      <div className="mx-auto w-full max-w-6xl flex flex-col gap-6">
+        {FAQS.map((item, idx) => (
+          <FAQItem key={idx} q={item.q} a={item.a} />
+        ))}
       </div>
     </div>
   );

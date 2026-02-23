@@ -1,4 +1,6 @@
-type UpcomingEvent = {
+import React from "react";
+
+export type UpcomingEvent = {
   id: number;
   title: string;
   orgOrVenue: string;
@@ -9,7 +11,27 @@ type UpcomingEvent = {
   onDetails?: () => void;
 };
 
-export function UpcomingEventCard({
+const ImageBox: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+  const hasSrc = Boolean(src && src.trim().length > 0);
+
+  if (!hasSrc) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-black/5 rounded-xl border border-black/10">
+        <span className="text-xs text-black/50">No Image</span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-full h-full object-cover rounded-xl border border-black/10"
+    />
+  );
+};
+
+export const UpcomingEventCard: React.FC<UpcomingEvent> = ({
   title,
   orgOrVenue,
   address,
@@ -17,37 +39,32 @@ export function UpcomingEventCard({
   daysAwayText,
   imageSrc,
   onDetails,
-}: UpcomingEvent) {
+}) => {
   return (
-    <div className="flex gap-4 rounded-md bg-[#d9d9d9] p-3 shadow-sm">
-      <img
-        src={imageSrc}
-        alt={title}
-        className="h-24 w-24 flex-shrink-0 rounded-sm object-cover"
-      />
+    <div className="grid grid-cols-[160px,1fr,180px] gap-6 p-5 bg-white text-black font-redhat rounded-2xl border border-black/10 shadow-sm">
+      <div className="w-full h-[120px]">
+        <ImageBox src={imageSrc} alt={title} />
+      </div>
 
-      <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="truncate font-[Oswald] text-xl text-black">{title}</h3>
-            <p className="text-sm text-black/80">{orgOrVenue}</p>
-            <p className="text-sm text-black/80">{address}</p>
-          </div>
-
-          <p className="whitespace-nowrap text-xs text-black/70">{daysAwayText}</p>
+      <div className="flex flex-col gap-3 min-w-0">
+        <div className="min-w-0">
+          <p className="font-oswald text-3xl leading-tight truncate">{title}</p>
+          <p className="italic text-sm text-black/70">{orgOrVenue}</p>
+          <p className="text-sm text-black/70">{address}</p>
         </div>
 
-        <div className="mt-2 flex items-end justify-between gap-3">
-          <p className="line-clamp-2 text-sm text-black/80">{description}</p>
+        <p className="text-sm text-black/80 line-clamp-2">{description}</p>
+      </div>
 
-          <button
-            onClick={onDetails}
-            className="rounded-full bg-[#bac67a] px-4 py-1 text-sm font-medium text-black shadow-sm hover:opacity-90"
-          >
-            Details
-          </button>
-        </div>
+      <div className="flex flex-col justify-between items-end">
+        <p className="text-sm text-black/70">{daysAwayText}</p>
+        <button
+          onClick={onDetails}
+          className="rounded-full px-5 py-2 bg-customGreen font-semibold hover:opacity-90"
+        >
+          Details
+        </button>
       </div>
     </div>
   );
-}
+};
