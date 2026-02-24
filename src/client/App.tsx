@@ -8,12 +8,14 @@ import { LoginPage } from "./routes/login";
 import { SignUpPage } from "./routes/signup";
 import { VerificationPage } from "./routes/verification";
 import { FAQPage } from "./routes/FAQ";
+import { CreateEventPage } from "./routes/CreateEvent";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/create-event" element={<CreateEventPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/upcoming" element={<UpcomingEventsPage />} />
         <Route path="/coordinator" element={<CoordinatorViewPage />} />
