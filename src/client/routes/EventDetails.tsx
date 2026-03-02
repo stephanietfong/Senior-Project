@@ -1,39 +1,43 @@
 import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getEventById } from "../../server/lib/events";
 
-interface EventDetailsProps {
-  title: string;
-  image: string;
-  host: string;
-  location: string;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  description: string;
-}
-
-export const EventDetails: React.FC<EventDetailsProps> = ({
-  title,
-  image,
-  host,
-  location,
-  startDate,
-  endDate,
-  description,
-}) => {
+export const EventDetails = () => {
   const { id } = useParams();
+  const [event, setEvent] = useState<any>({});
+
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      try {
+        if (id) {
+          const event = await getEventById(id.toString());
+          if (event) {
+            setEvent(event);
+            console.log(event);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching event details:", error);
+      }
+    };
+    fetchEventDetails();
+  }, [id]);
 
   return (
     <div className="py-4 px-20 text-black flex flex-col justify-center align-center">
-      <h1 className="text-3xl font-bold">{title}</h1>
-      <img src={image} alt="" />
+      <h1 className="text-3xl font-bold">{event.title}</h1>
+      <img src={event.image_url} alt="" />
       <ul>
-        <li>Hosted by: {host}</li>
-        <li>Starts at {startDate?.toLocaleString()}</li>
-        <li>Ends at {endDate?.toLocaleString()}</li>
+        <li>
+          Hosted by: {event.host ? event.host.display_name : "Unknown Host"}
+        </li>
+        <li>Starts at {event.start_time?.toLocaleString()}</li>
+        <li>Ends at {event.end_time?.toLocaleString()}</li>
       </ul>
-      <p>{description}</p>
+      <p>{event.description}</p>
       <div>
         <p>Location</p>
-        <p>{location}</p>
+        <p>{event.location_name}</p>
       </div>
       <div>
         <p>Interested?</p>

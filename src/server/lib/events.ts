@@ -14,7 +14,7 @@ export const getAllEvents = async () => {
       `,
     )
     .gte("start_time", nowISO)
-    .order("start_time", { ascending: false });
+    .order("start_time", { ascending: true });
   if (error) throw error;
   return data;
 };

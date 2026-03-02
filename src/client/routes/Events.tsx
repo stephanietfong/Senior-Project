@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { EventCard } from "../components/EventCard";
 import { getAllEvents } from "../../server/lib/events";
 
-const Tags = ["Academic", "Club", "Music", "18+", "21+", "Sport", "Outside"];
-
 export const EventsPage = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [displayedEvents, setDisplayedEvents] = useState<any[]>([]);
@@ -16,6 +14,7 @@ export const EventsPage = () => {
 
         setEvents(data ?? []);
         setDisplayedEvents(data ?? []);
+        console.log(data);
       } catch (error) {
         console.error("Error fetching events:", error);
       }
@@ -53,13 +52,14 @@ export const EventsPage = () => {
       <div className="flex flex-col gap-10">
         {displayedEvents.map((e) => (
           <EventCard
-            key={e.id}
-            id={e.id}
+            key={e.event_id}
+            id={e.event_id}
             name={e.title}
             image={e.image_url}
             location={e.location_name}
             date={e.start_time}
             description={e.summary}
+            tags={e.event_tags}
           />
         ))}
       </div>
