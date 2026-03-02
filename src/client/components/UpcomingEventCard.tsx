@@ -1,7 +1,7 @@
 import React from "react";
 
 export type UpcomingEvent = {
-  id: number;
+  id: string;
   title: string;
   orgOrVenue: string;
   address: string;
