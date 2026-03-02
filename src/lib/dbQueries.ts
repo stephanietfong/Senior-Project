@@ -1,13 +1,15 @@
-import { supabase } from './supabase';
+// src/lib/dbQueries.ts
+import { supabase } from "./supabase";
 
-//authentication
+// --------------------
+// AUTH
+// --------------------
 export const signUp = async (
   email: string,
   password: string,
   displayName: string,
-  dateOfBirth: string
+  dateOfBirth: string,
 ) => {
-  // Sign up with Supabase Auth
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -15,8 +17,7 @@ export const signUp = async (
 
   if (error) throw error;
 
-  // Create user profile in users table
-  const { error: insertError } = await supabase.from('users').insert({
+  const { error: insertError } = await supabase.from("users").insert({
     user_id: data.user?.id,
     email,
     display_name: displayName,
@@ -41,7 +42,6 @@ export const login = async (email: string, password: string) => {
 
 export const logout = async () => {
   const { error } = await supabase.auth.signOut();
-
   if (error) throw error;
 };
 
@@ -53,94 +53,115 @@ export const getCurrentUser = async () => {
   return user;
 };
 
-//user queries
+// --------------------
+// USER
+// --------------------
 export const getUserById = async (userId: string) => {
   const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('user_id', userId)
+    .from("users")
+    .select("*")
+    .eq("user_id", userId)
     .single();
-  
+
   if (error) throw error;
   return data;
 };
 
-//event queries
+// --------------------
+// EVENTS
+// --------------------
 export const getEventById = async (eventId: string) => {
   const { data, error } = await supabase
-    .from('events')
-    .select(`
+    .from("events")
+    .select(
+      `
       *,
       host:users(user_id, display_name, email),
-      event_tags(tags(tag_id, tag_name))
-    `)
-    .eq('event_id', eventId)
+      event_tags(
+        tag:tags(tag_id, tag_name)
+      )
+    `,
+    )
+    .eq("event_id", eventId)
     .single();
-  
+
   if (error) throw error;
   return data;
 };
 
-//get all upcoming events
 export const getUpcomingEvents = async () => {
   const { data, error } = await supabase
-    .from('events')
-    .select(`
+    .from("events")
+    .select(
+      `
       *,
       host:users(user_id, display_name),
-      event_tags(tags(tag_id, tag_name))
-    `)
-    .gt('start_time', new Date().toISOString())
-    .order('start_time', { ascending: true });
-  
+      event_tags(
+        tag:tags(tag_id, tag_name)
+      )
+    `,
+    )
+    .gt("start_time", new Date().toISOString())
+    .order("start_time", { ascending: true });
+
   if (error) throw error;
   return data;
 };
 
-//get hosted events for a user
 export const getHostedEvents = async (userId: string) => {
   const { data, error } = await supabase
-    .from('events')
-    .select(`
+    .from("events")
+    .select(
+      `
       *,
-      event_tags(tags(tag_id, tag_name))
-    `)
-    .eq('host_id', userId)
-    .order('start_time', { ascending: false });
-  
+      event_tags(
+        tag:tags(tag_id, tag_name)
+      )
+    `,
+    )
+    .eq("host_id", userId)
+    .order("start_time", { ascending: false });
+
   if (error) throw error;
   return data;
 };
 
-//get past events a user attended (via RSVPs)
 export const getPastEvents = async (userId: string) => {
   const { data, error } = await supabase
-    .from('rsvps')
-    .select(`
+    .from("rsvps")
+    .select(
+      `
       event:events(
         *,
         host:users(user_id, display_name),
-        event_tags(tags(tag_id, tag_name))
+        event_tags(
+          tag:tags(tag_id, tag_name)
+        )
       )
-    `)
-    .eq('user_id', userId)
-    .lt('event.end_time', new Date().toISOString())
-    .order('event.end_time', { ascending: false });
-  
+    `,
+    )
+    .eq("user_id", userId)
+    .lt("event.end_time", new Date().toISOString())
+    .order("event.end_time", { ascending: false });
+
   if (error) throw error;
   return data?.map((rsvp: any) => rsvp.event) || [];
 };
 
-//rsvp queries
+// --------------------
+// RSVPs
+// --------------------
 export const getRSVPsForEvent = async (eventId: string) => {
   const { data, error } = await supabase
-    .from('rsvps')
-    .select(`
+    .from("rsvps")
+    .select(
+      `
       *,
       user:users(user_id, display_name)
-    `)
-    .eq('event_id', eventId);
-  
+    `,
+    )
+    .eq("event_id", eventId);
+
   if (error) throw error;
   return data;
 };
@@ -148,10 +169,10 @@ export const getRSVPsForEvent = async (eventId: string) => {
 export const createOrUpdateRSVP = async (
   userId: string,
   eventId: string,
-  status: 'Maybe' | 'Going'
+  status: "Maybe" | "Going",
 ) => {
   const { data, error } = await supabase
-    .from('rsvps')
+    .from("rsvps")
     .upsert({
       user_id: userId,
       event_id: eventId,
@@ -159,9 +180,19 @@ export const createOrUpdateRSVP = async (
     })
     .select()
     .single();
-  
+
   if (error) throw error;
   return data;
+};
+
+export const deleteRSVP = async (userId: string, eventId: string) => {
+  const { error } = await supabase
+    .from("rsvps")
+    .delete()
+    .eq("user_id", userId)
+    .eq("event_id", eventId);
+
+  if (error) throw error;
 };
 
 export const getUpcomingRSVPEventsForUser = async (userId: string) => {
@@ -175,7 +206,9 @@ export const getUpcomingRSVPEventsForUser = async (userId: string) => {
       event:events(
         *,
         host:users(user_id, display_name),
-        event_tags(tags(tag_id, tag_name))
+        event_tags(
+          tag:tags(tag_id, tag_name)
+        )
       )
     `,
     )
@@ -198,62 +231,76 @@ export const getRSVPCountForEvent = async (eventId: string) => {
   return count ?? 0;
 };
 
-export const deleteRSVP = async (userId: string, eventId: string) => {
-  const { error } = await supabase
-    .from('rsvps')
-    .delete()
-    .eq('user_id', userId)
-    .eq('event_id', eventId);
-  
+// NEW: used by Event Details page
+export const getUserRSVPStatusForEvent = async (
+  userId: string,
+  eventId: string,
+) => {
+  const { data, error } = await supabase
+    .from("rsvps")
+    .select("status")
+    .eq("user_id", userId)
+    .eq("event_id", eventId)
+    .maybeSingle();
+
+  // if row doesn't exist, data is null (that's fine)
   if (error) throw error;
+
+  return (data?.status as "Maybe" | "Going" | undefined) ?? undefined;
 };
 
-//tags queries
+// --------------------
+// TAGS
+// --------------------
 export const getAllTags = async () => {
   const { data, error } = await supabase
-    .from('tags')
-    .select('*')
-    .order('tag_name', { ascending: true });
-  
+    .from("tags")
+    .select("*")
+    .order("tag_name", { ascending: true });
+
   if (error) throw error;
   return data;
 };
 
 export const getUserInterests = async (userId: string) => {
   const { data, error } = await supabase
-    .from('user_interests')
-    .select(`
+    .from("user_interests")
+    .select(
+      `
       user_interest_id,
       tag:tags(tag_id, tag_name)
-    `)
-    .eq('user_id', userId);
-  
+    `,
+    )
+    .eq("user_id", userId);
+
   if (error) throw error;
   return data?.map((item: any) => item.tag) || [];
 };
 
 export const addUserInterest = async (userId: string, tagId: string) => {
   const { data, error } = await supabase
-    .from('user_interests')
+    .from("user_interests")
     .insert({ user_id: userId, tag_id: tagId })
     .select()
     .single();
-  
+
   if (error) throw error;
   return data;
 };
 
 export const removeUserInterest = async (userId: string, tagId: string) => {
   const { error } = await supabase
-    .from('user_interests')
+    .from("user_interests")
     .delete()
-    .eq('user_id', userId)
-    .eq('tag_id', tagId);
-  
+    .eq("user_id", userId)
+    .eq("tag_id", tagId);
+
   if (error) throw error;
 };
 
-//event creation/update
+// --------------------
+// EVENT CREATE/UPDATE + EVENT TAGS
+// --------------------
 export const createEvent = async (eventData: {
   host_id: string;
   title: string;
@@ -268,11 +315,11 @@ export const createEvent = async (eventData: {
   end_time: string;
 }) => {
   const { data, error } = await supabase
-    .from('events')
+    .from("events")
     .insert(eventData)
     .select()
     .single();
-  
+
   if (error) throw error;
   return data;
 };
@@ -291,26 +338,26 @@ export const updateEvent = async (
     is_21_plus?: boolean;
     start_time?: string;
     end_time?: string;
-  }>
+  }>,
 ) => {
   const { data, error } = await supabase
-    .from('events')
+    .from("events")
     .update(eventData)
-    .eq('event_id', eventId)
+    .eq("event_id", eventId)
     .select()
     .single();
-  
+
   if (error) throw error;
   return data;
 };
 
 export const addTagToEvent = async (eventId: string, tagId: string) => {
   const { data, error } = await supabase
-    .from('event_tags')
+    .from("event_tags")
     .insert({ event_id: eventId, tag_id: tagId })
     .select()
     .single();
-  
+
   if (error) throw error;
   return data;
 };

@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { UpcomingEventCard, UpcomingEvent } from "../components/UpcomingEventCard";
+import { useNavigate } from "react-router-dom";
+import {
+  UpcomingEventCard,
+  UpcomingEvent,
+} from "../components/UpcomingEventCard";
 import { getCurrentUser, getUpcomingRSVPEventsForUser } from "../../lib/dbQueries";
 
 function daysAwayText(startTimeIso: string) {
@@ -11,39 +15,32 @@ function daysAwayText(startTimeIso: string) {
   return `In ${diff} days`;
 }
 
-function mapRowToUpcomingEvent(row: any): UpcomingEvent {
-  const e = row.event;
-
-  // pick something sensible for "orgOrVenue"
-  const orgOrVenue =
-    e?.host?.display_name ||
-    e?.location_name ||
-    "Unknown host";
-
-  const address =
-    e?.address ||
-    e?.location_name ||
-    "TBA";
-
-  return {
-    id: e.event_id, // note: your card type says number; but DB is uuid.
-    // If TS complains, change UpcomingEventCard type id to string | number.
-    title: e.title,
-    orgOrVenue,
-    address,
-    description: e.summary || "",
-    daysAwayText: daysAwayText(e.start_time),
-    imageSrc: e.image_url || "",
-    onDetails: () => alert(`TODO: Details for ${e.title}`),
-  } as unknown as UpcomingEvent;
-}
-
 export function UpcomingEventsPage() {
+  const nav = useNavigate();
+
   const [search, setSearch] = useState("");
   const [going, setGoing] = useState<UpcomingEvent[]>([]);
   const [maybe, setMaybe] = useState<UpcomingEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  function mapRowToUpcomingEvent(row: any): UpcomingEvent {
+    const e = row.event;
+
+    const orgOrVenue = e?.host?.display_name || e?.location_name || "Unknown host";
+    const address = e?.address || e?.location_name || "TBA";
+
+    return {
+      id: e.event_id,
+      title: e.title,
+      orgOrVenue,
+      address,
+      description: e.summary || "",
+      daysAwayText: daysAwayText(e.start_time),
+      imageSrc: e.image_url || "",
+      onDetails: () => nav(`/events/${e.event_id}`),
+    };
+  }
 
   useEffect(() => {
     const run = async () => {
@@ -51,13 +48,15 @@ export function UpcomingEventsPage() {
         setLoading(true);
         setErrorMsg(null);
 
-        const user = await getCurrentUser();
-        if (!user) {
-          setGoing([]);
-          setMaybe([]);
-          setErrorMsg("You must be logged in to view your Upcoming events.");
-          return;
-        }
+        // const user = await getCurrentUser();
+        // if (!user) {
+        //   setGoing([]);
+        //   setMaybe([]);
+        //   setErrorMsg("You must be logged in to view your Upcoming events.");
+        //   return;
+        // }
+
+        const user = { id: "cd3de8dd-3555-4cde-831e-963e8ff28560" };
 
         const rows = await getUpcomingRSVPEventsForUser(user.id);
 
@@ -106,16 +105,14 @@ export function UpcomingEventsPage() {
 
         <button
           className="bg-customDarkBlue py-2 px-4 font-semibold hover:opacity-90"
-          onClick={() => window.history.back()}
+          onClick={() => nav(-1)}
         >
           ← Back to Search
         </button>
       </div>
 
       {loading && <p className="text-sm text-black/60">Loading…</p>}
-      {!loading && errorMsg && (
-        <p className="text-sm text-red-600">{errorMsg}</p>
-      )}
+      {!loading && errorMsg && <p className="text-sm text-red-600">{errorMsg}</p>}
 
       {!loading && !errorMsg && (
         <div className="mx-auto w-full max-w-6xl flex flex-col gap-12">

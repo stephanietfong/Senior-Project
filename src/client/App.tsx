@@ -9,6 +9,7 @@ import { SignUpPage } from "./routes/signup";
 import { VerificationPage } from "./routes/verification";
 import { FAQPage } from "./routes/FAQ";
 import { CreateEventPage } from "./routes/CreateEvent";
+import { EventDetailsPage } from "./routes/EventDetails";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/create-event" element={<CreateEventPage />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/:eventId" element={<EventDetailsPage />} />
         <Route path="/upcoming" element={<UpcomingEventsPage />} />
         <Route path="/coordinator" element={<CoordinatorViewPage />} />
         <Route path="/login" element={<LoginPage />} />
