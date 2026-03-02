@@ -48,15 +48,13 @@ export function UpcomingEventsPage() {
         setLoading(true);
         setErrorMsg(null);
 
-        // const user = await getCurrentUser();
-        // if (!user) {
-        //   setGoing([]);
-        //   setMaybe([]);
-        //   setErrorMsg("You must be logged in to view your Upcoming events.");
-        //   return;
-        // }
-
-        const user = { id: "cd3de8dd-3555-4cde-831e-963e8ff28560" };
+        const user = await getCurrentUser();
+        if (!user) {
+          setGoing([]);
+          setMaybe([]);
+          setErrorMsg("You must be logged in to view your Upcoming events.");
+          return;
+        }
 
         const rows = await getUpcomingRSVPEventsForUser(user.id);
 

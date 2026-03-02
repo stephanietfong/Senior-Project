@@ -54,8 +54,6 @@ export const CoordinatorViewPage = () => {
           return;
         }
 
-        //const authUser = { id: "cd3de8dd-3555-4cde-831e-963e8ff28560" };
-
         // get profile info
         const profile = await getUserById(authUser.id);
         setOrgName(profile?.display_name || "Coordinator");
