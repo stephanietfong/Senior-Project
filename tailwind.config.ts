@@ -9,6 +9,7 @@ export default {
         customGreen: "#BAC67A",
         customBrown: "#655B5B",
         customGray: "#D9D9D9",
+        customBeige: "#FAF7ED",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
       },
