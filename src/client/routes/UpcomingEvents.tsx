@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import {
   UpcomingEventCard,
   UpcomingEvent,
-} from "../components/UpcomingEventCard";
-import { getCurrentUser } from "../../server/lib/users";
-import { getUpcomingRSVPEventsForUser } from "../../server/lib/rsvps";
+} from "@components/UpcomingEventCard";
+import { getCurrentUser } from "@lib/users";
+import { getUpcomingRSVPEventsForUser } from "@lib/rsvps";
 
 function daysAwayText(startTimeIso: string) {
   const now = new Date();

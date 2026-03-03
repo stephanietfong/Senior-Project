@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { PastEventCard, PastEvent } from "../components/PastEventCard";
-import { getCurrentUser } from "../../server/lib/users";
-import { getHostedEvents } from "../../server/lib/events";
-import { getUserById } from "../../server/lib/users";
-import { getRSVPCountForEvent } from "../../server/lib/rsvps";
+import { PastEventCard, PastEvent } from "@components/PastEventCard";
+import { getCurrentUser } from "@lib/users";
+import { getHostedEvents } from "@lib/events";
+import { getUserById } from "@lib/users";
+import { getRSVPCountForEvent } from "@lib/rsvps";
 
 function formatDateShort(iso: string) {
   const d = new Date(iso);

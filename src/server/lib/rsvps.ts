@@ -1,4 +1,4 @@
-import { supabase } from "../supabase";
+import { supabase } from "@server/supabase";
 
 // GET RSVPS FOR AN EVENT
 export const getRSVPsForEvent = async (eventId: string) => {

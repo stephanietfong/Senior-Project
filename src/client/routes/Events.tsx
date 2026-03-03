@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { EventCard } from "../components/EventCard";
-import { getAllEvents } from "../../server/lib/events";
-import { getAllTags } from "../../server/lib/tags";
+import { EventCard } from "@components/EventCard";
+import { getAllEvents } from "@lib/events";
+import { getAllTags } from "@lib/tags";
 
 export const EventsPage = () => {
+  const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
   const [displayedEvents, setDisplayedEvents] = useState<any[]>([]);
@@ -17,6 +18,7 @@ export const EventsPage = () => {
 
         setEvents(events ?? []);
         setDisplayedEvents(events ?? []);
+        setLoading(false);
         console.log(events);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -65,9 +67,13 @@ export const EventsPage = () => {
     );
   }
 
+  if (loading) {
+    return <p>Loading ...</p>;
+  }
+
   return (
-    <div className="py-4 px-20 text-black">
-      <div className="my-10 flex flex-row justify-between">
+    <div className="py-10 px-20 text-black">
+      <div className="mb-10 flex flex-row justify-between">
         <input
           type="text"
           placeholder="Search by Event Name"

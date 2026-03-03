@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { SignUpBox } from "../components/SignUpBox";
+import { SignUpBox } from "@components/SignUpBox";
 
 export const VerificationPage = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -41,7 +41,9 @@ export const VerificationPage = () => {
   // Render a single digit box
   const DigitBox = ({ index }: { index: number }) => (
     <input
-      ref={(el) => { inputs.current[index] = el; }}
+      ref={(el) => {
+        inputs.current[index] = el;
+      }}
       type="text"
       inputMode="numeric"
       maxLength={1}
@@ -65,10 +67,11 @@ export const VerificationPage = () => {
     >
       <SignUpBox>
         <div className="flex flex-col justify-center h-full px-10 py-8 gap-6">
-
           {/* Message */}
           <p className="text-black text-center" style={{ lineHeight: "1.5" }}>
-            We sent a verification code<br />to your inbox.
+            We sent a verification code
+            <br />
+            to your inbox.
           </p>
 
           {/* Code inputs: 3 boxes — dash — 3 boxes */}
@@ -104,7 +107,6 @@ export const VerificationPage = () => {
               Verify →
             </button>
           </div>
-
         </div>
       </SignUpBox>
     </div>

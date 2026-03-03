@@ -1,6 +1,6 @@
 import { useState } from "react";
 import React from "react";
-import { SignUpBox } from "../components/SignUpBox";
+import { SignUpBox } from "@components/SignUpBox";
 import { useNavigate } from "react-router-dom";
 
 export const SignUpPage = () => {
@@ -11,7 +11,13 @@ export const SignUpPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignUp = () => {
-    console.log("Sign up attempted", { name, dob, email, password, confirmPassword });
+    console.log("Sign up attempted", {
+      name,
+      dob,
+      email,
+      password,
+      confirmPassword,
+    });
   };
 
   const navigate = useNavigate();
@@ -19,12 +25,9 @@ export const SignUpPage = () => {
     console.log("Back button clicked");
     navigate(-1);
   };
-  
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-customBeige"
-    >
+    <div className="min-h-screen flex items-center justify-center bg-customBeige">
       <button
         onClick={handleBack}
         className="bg-customGreen px-4 py-2 rounded absolute top-6 left-6 flex items-center gap-1 text-sm font-medium text-black hover:opacity-60 transition-opacity cursor-pointer"
@@ -33,7 +36,6 @@ export const SignUpPage = () => {
       </button>
       <SignUpBox>
         <div className="flex flex-col justify-center h-full px-10 py-8">
-
           {/* Name */}
           <div className="mb-4">
             <label className="block text-black text-base mb-1">Name</label>
@@ -48,7 +50,9 @@ export const SignUpPage = () => {
 
           {/* Date of Birth */}
           <div className="mb-4">
-            <label className="block text-black text-base mb-1">Date of Birth</label>
+            <label className="block text-black text-base mb-1">
+              Date of Birth
+            </label>
             <input
               type="text"
               value={dob}
@@ -81,7 +85,9 @@ export const SignUpPage = () => {
 
           {/* Confirm Password */}
           <div className="mb-8">
-            <label className="block text-black text-base mb-1">Confirm Password</label>
+            <label className="block text-black text-base mb-1">
+              Confirm Password
+            </label>
             <input
               type="password"
               value={confirmPassword}
@@ -102,4 +108,4 @@ export const SignUpPage = () => {
       </SignUpBox>
     </div>
   );
-}
+};

@@ -1,4 +1,4 @@
-import { supabase } from "../supabase";
+import { supabase } from "@server/supabase";
 
 // AUTHENTICATION
 export const signUp = async (

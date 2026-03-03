@@ -1,4 +1,4 @@
-import { supabase } from "../supabase";
+import { supabase } from "@server/supabase";
 
 // GET ALL EVENTS FOR HOME PAGE
 export const getAllEvents = async () => {

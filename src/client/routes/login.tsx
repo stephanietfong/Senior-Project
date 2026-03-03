@@ -1,6 +1,6 @@
 import { useState } from "react";
 import React from "react";
-import { SignUpBox } from "../components/SignUpBox";
+import { SignUpBox } from "@components/SignUpBox";
 import { useNavigate } from "react-router-dom";
 
 export const LoginPage = () => {
@@ -18,15 +18,13 @@ export const LoginPage = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-customBeige"
-    >
+    <div className="min-h-screen flex items-center justify-center bg-customBeige">
       <button
         onClick={handleBack}
         className="bg-customGreen px-4 py-2 rounded absolute top-6 left-6 flex items-center gap-1 text-sm font-medium text-black hover:opacity-60 transition-opacity cursor-pointer"
-        >
-          ← Back
-        </button>
+      >
+        ← Back
+      </button>
       <SignUpBox>
         <div className="relative flex flex-col items-center justify-center h-full px-16">
           <h1
@@ -70,4 +68,4 @@ export const LoginPage = () => {
       </SignUpBox>
     </div>
   );
-}
+};

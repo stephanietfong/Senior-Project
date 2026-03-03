@@ -1,4 +1,4 @@
-import { supabase } from "../supabase";
+import { supabase } from "@server/supabase";
 
 // GET USER INTERESTS BY USER ID
 export const getUserInterests = async (userId: string) => {
