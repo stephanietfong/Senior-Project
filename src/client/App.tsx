@@ -26,6 +26,7 @@ const App = () => {
             <Route element={<SectionHeaderLayout />}>
               <Route path="/create-event" element={<CreateEventPage />} />
               <Route path="/events" element={<EventsPage />} />
+              <Route path="/events/:id" element={<EventDetails />} />
               <Route path="/upcoming" element={<UpcomingEventsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/my-events" element={<MyEventsPage />} />

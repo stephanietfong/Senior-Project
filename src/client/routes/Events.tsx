@@ -97,16 +97,16 @@ export const EventsPage = () => {
         </details>
 
         <button
-          className="bg-customGreen py-2 font-semibold px-4 rounded-md"
-          onClick={handleSearch}
-        >
-          Search
-        </button>
-        <button
-          className="bg-customDarkBlue py-2 px-4 font-semibold rounded-md"
+          className="bg-customBrown py-2 px-4 font-semibold rounded-md"
           onClick={clearSearch}
         >
           Clear Search
+        </button>
+        <button
+          className="bg-customGreen py-2 font-semibold px-10 rounded-md"
+          onClick={handleSearch}
+        >
+          Search Events
         </button>
       </div>
 

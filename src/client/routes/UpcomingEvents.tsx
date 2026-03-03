@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { UpcomingEventCard, UpcomingEvent } from "../components/UpcomingEventCard";
-import { getCurrentUser, getUpcomingRSVPEventsForUser } from "../../lib/dbQueries";
+import {
+  UpcomingEventCard,
+  UpcomingEvent,
+} from "../components/UpcomingEventCard";
+import { getCurrentUser } from "../../server/lib/users";
+import { getUpcomingRSVPEventsForUser } from "../../server/lib/rsvps";
 
 function daysAwayText(startTimeIso: string) {
   const now = new Date();
   const start = new Date(startTimeIso);
-  const diff = Math.ceil((start.getTime() - now.getTime()) / (24 * 3600 * 1000));
+  const diff = Math.ceil(
+    (start.getTime() - now.getTime()) / (24 * 3600 * 1000),
+  );
   if (diff <= 0) return "Today";
   if (diff === 1) return "In 1 day";
   return `In ${diff} days`;
@@ -16,14 +22,9 @@ function mapRowToUpcomingEvent(row: any): UpcomingEvent {
 
   // pick something sensible for "orgOrVenue"
   const orgOrVenue =
-    e?.host?.display_name ||
-    e?.location_name ||
-    "Unknown host";
+    e?.host?.display_name || e?.location_name || "Unknown host";
 
-  const address =
-    e?.address ||
-    e?.location_name ||
-    "TBA";
+  const address = e?.address || e?.location_name || "TBA";
 
   return {
     id: e.event_id, // note: your card type says number; but DB is uuid.

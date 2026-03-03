@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { PastEventCard, PastEvent } from "../components/PastEventCard";
-import { getCurrentUser, getHostedEvents, getUserById, getRSVPCountForEvent } from "../../lib/dbQueries";
+import { getCurrentUser } from "../../server/lib/users";
+import { getHostedEvents } from "../../server/lib/events";
+import { getUserById } from "../../server/lib/users";
+import { getRSVPCountForEvent } from "../../server/lib/rsvps";
 
 function formatDateShort(iso: string) {
   const d = new Date(iso);
@@ -42,7 +45,9 @@ export const CoordinatorViewPage = () => {
         // fetch profile from your users table (display_name, created_at)
         const profile = await getUserById(authUser.id);
         setOrgName(profile?.display_name || "Coordinator");
-        setHostingSince(profile?.created_at ? formatDateShort(profile.created_at) : "—");
+        setHostingSince(
+          profile?.created_at ? formatDateShort(profile.created_at) : "—",
+        );
 
         // hosted events
         const hosted = await getHostedEvents(authUser.id);
@@ -61,18 +66,18 @@ export const CoordinatorViewPage = () => {
         );
 
         const mapped: PastEvent[] = withCounts.map(
-        ({ e, count }: { e: any; count: number }) => ({
+          ({ e, count }: { e: any; count: number }) => ({
             id: e.event_id,
             title: e.title,
             description: e.summary || "—",
             daysAgoText: daysAgoText(e.end_time),
             likedText: `${count} people RSVP’d`,
             tags:
-            (e.event_tags || [])
+              (e.event_tags || [])
                 .map((et: any) => et?.tags?.tag_name)
                 .filter(Boolean) || [],
             imageSrc: e.image_url || "",
-        }),
+          }),
         );
 
         setPastEvents(mapped);
@@ -108,7 +113,9 @@ export const CoordinatorViewPage = () => {
       </div>
 
       {loading && <p className="text-sm text-black/60">Loading…</p>}
-      {!loading && errorMsg && <p className="text-sm text-red-600">{errorMsg}</p>}
+      {!loading && errorMsg && (
+        <p className="text-sm text-red-600">{errorMsg}</p>
+      )}
 
       {!loading && !errorMsg && (
         <div className="mx-auto w-full max-w-6xl flex flex-col gap-8">
