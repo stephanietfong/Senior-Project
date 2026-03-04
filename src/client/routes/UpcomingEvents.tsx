@@ -56,13 +56,22 @@ export function UpcomingEventsPage() {
           return;
         }
 
+        //const user = { id: "cd3de8dd-3555-4cde-831e-963e8ff28560" };
+
         const rows = await getUpcomingRSVPEventsForUser(user.id);
 
-        const goingEvents = rows
+        // sort client-side by embedded event.start_time
+        const sortedRows = [...rows].sort((a: any, b: any) => {
+          const aT = new Date(a?.event?.start_time ?? 0).getTime();
+          const bT = new Date(b?.event?.start_time ?? 0).getTime();
+          return aT - bT;
+        });
+
+        const goingEvents = sortedRows
           .filter((r: any) => r.status === "Going")
           .map(mapRowToUpcomingEvent);
 
-        const maybeEvents = rows
+        const maybeEvents = sortedRows
           .filter((r: any) => r.status === "Maybe")
           .map(mapRowToUpcomingEvent);
 

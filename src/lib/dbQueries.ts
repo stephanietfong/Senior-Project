@@ -206,15 +206,14 @@ export const getUpcomingRSVPEventsForUser = async (userId: string) => {
       event:events(
         *,
         host:users(user_id, display_name),
-        event_tags(
-          tag:tags(tag_id, tag_name)
-        )
+        event_tags(tags(tag_id, tag_name))
       )
     `,
     )
     .eq("user_id", userId)
-    .gt("event.start_time", nowIso)
-    .order("event.start_time", { ascending: true });
+    // NOTE: filtering on embedded event fields can be finicky; if this gives issues,
+    // we can remove it and filter client-side.
+    .gt("event.start_time", nowIso);
 
   if (error) throw error;
 

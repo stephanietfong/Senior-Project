@@ -53,6 +53,9 @@ export const CoordinatorViewPage = () => {
           setPastEvents([]);
           return;
         }
+        
+        // WILL BE REMOVED, JUST HERE FOR TESTING WITHOUT LOGIN YeT
+        const user = { id: "cd3de8dd-3555-4cde-831e-963e8ff28560" };
 
         // get profile info
         const profile = await getUserById(authUser.id);
