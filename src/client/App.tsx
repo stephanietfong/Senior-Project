@@ -3,10 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LandingPage } from "./routes/Landing";
 import { UpcomingEventsPage } from "./routes/UpcomingEvents";
 import { EventsPage } from "./routes/Events";
+import { EventDetails } from "./routes/EventDetails";
 import { CoordinatorViewPage } from "./routes/CoordinatorView";
-import { LoginPage } from "./routes/login";
-import { SignUpPage } from "./routes/signup";
-import { VerificationPage } from "./routes/verification";
+import { LoginPage } from "./routes/Login";
+import { SignUpPage } from "./routes/Signup";
+import { VerificationPage } from "./routes/Verification";
 import { FAQPage } from "./routes/FAQ";
 import { CreateEventPage } from "./routes/CreateEvent";
 import { ContactUsPage } from "./routes/ContactUs";
@@ -25,6 +26,7 @@ const App = () => {
             <Route element={<SectionHeaderLayout />}>
               <Route path="/create-event" element={<CreateEventPage />} />
               <Route path="/events" element={<EventsPage />} />
+              <Route path="/events/:id" element={<EventDetails />} />
               <Route path="/upcoming" element={<UpcomingEventsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/my-events" element={<MyEventsPage />} />

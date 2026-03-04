@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import UserIcon from "../assets/user.png";
+import UserIcon from "@client/assets/user.png";
 
 export function SectionHeader() {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,7 +10,7 @@ export function SectionHeader() {
   };
 
   return (
-    <header className="w-full border-b border-black/10 bg-[#e8f0e8] px-6 py-4 text-black">
+    <header className="w-full border-b border-black/10 bg-customBlue px-6 py-4 text-black">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
         <Link
           to="/events"

@@ -1,98 +1,134 @@
-import { useState } from "react";
-import { EventCard } from "../components/EventCard";
-import CountryLineDancing from "../assets/CountryLineDancing.png";
-import Swamphacks from "../assets/Swamphacks.png";
-import Ropin from "../assets/Ropin.png";
-
-const SampleEvents: {
-  id: number;
-  title: string;
-  image: string;
-  location: string;
-  description: string;
-  date: Date;
-  tags: string[];
-}[] = [
-  {
-    id: 1,
-    title: "Swamphacks",
-    image: Swamphacks,
-    location: "University of Florida",
-    description:
-      "SwampHacks is the University of Florida’s flagship student-run hackathon — a 36-hour innovation sprint where college students from UF and around the country team up to learn new skills, build projects, and network with peers, mentors, and tech sponsors. It’s free to attend, open to all majors and experience levels, and includes workshops, mentorship, coding, and community events designed to help participants bring creative ideas to life.",
-    date: new Date(),
-    tags: ["Academic"],
-  },
-  {
-    id: 2,
-    title: "Ropin in the Swamp",
-    image: Ropin,
-    location: "1934 SW 63rd Ave, Gainesville, FL",
-    description:
-      "Ropin’ in the Swamp is an annual western-themed event held at the University of Florida’s Horse Teaching Unit where participants compete in team roping and other rodeo-style activities, often featuring family-friendly games, demonstrations, and a festive atmosphere celebrating horsemanship.",
-    date: new Date(2026, 12, 25, 10, 0, 0, 0),
-    tags: ["Sport", "Outside"],
-  },
-  {
-    id: 3,
-    title: "Country Line Dancing",
-    image: CountryLineDancing,
-    location: "Vivid Music Hall",
-    description:
-      "Vivid Music Hall in downtown Gainesville hosts country line dancing nights where people gather on the dance floor to groove to upbeat country music and learn or show off synchronized line dance moves. It’s a lively, social evening with a fun, energetic atmosphere open to dancers of all experience levels.",
-    date: new Date(2026, 11, 25, 10, 0, 0, 0),
-    tags: ["Club", "Music", "18+"],
-  },
-];
-
-const Tags = ["Academic", "Club", "Music", "18+", "21+", "Sport", "Outside"];
+import { useState, useEffect } from "react";
+import { EventCard } from "@components/EventCard";
+import { getAllEvents } from "@lib/events";
+import { getAllTags } from "@lib/tags";
 
 export const EventsPage = () => {
-  const [events, setEvents] = useState(SampleEvents);
-  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState<any[]>([]);
+  const [tags, setTags] = useState<any[]>([]);
+  const [displayedEvents, setDisplayedEvents] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTags, setSearchTags] = useState<string[]>([]);
 
-  function handleClick(): void {
-    const newEvents = SampleEvents.filter((e) =>
-      e.title.toLowerCase().includes(search.toLowerCase()),
+  useEffect(() => {
+    const fetchAllEvents = async () => {
+      try {
+        const events = await getAllEvents();
+
+        setEvents(events ?? []);
+        setDisplayedEvents(events ?? []);
+        setLoading(false);
+        console.log(events);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    const fetchAllTags = async () => {
+      try {
+        const tags = await getAllTags();
+
+        setTags(tags ?? []);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+    fetchAllEvents();
+    fetchAllTags();
+  }, []);
+
+  function handleSearch(): void {
+    // Search by event title or summary, and filter by selected tags
+    const newEvents = events.filter(
+      (e) =>
+        (e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          e.summary.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (searchTags.length === 0 ||
+          e.event_tags.some((tagObj: any) =>
+            searchTags.includes(tagObj.tags.tag_name),
+          )),
     );
-    setEvents(newEvents);
+
+    setDisplayedEvents(newEvents);
+  }
+
+  function clearSearch(): void {
+    setSearchTerm("");
+    setSearchTags([]);
+    setDisplayedEvents(events);
+  }
+
+  function toggleSearchTag(tagName: string): void {
+    setSearchTags((prev) =>
+      prev.includes(tagName)
+        ? prev.filter((tag) => tag !== tagName)
+        : [...prev, tagName],
+    );
+  }
+
+  if (loading) {
+    return <p>Loading ...</p>;
   }
 
   return (
-    <div className="py-4 px-20 text-black">
-      <div className="my-10 flex flex-row justify-between">
+    <div className="py-10 px-20 text-black">
+      <div className="mb-10 flex flex-row justify-between">
         <input
           type="text"
           placeholder="Search by Event Name"
-          className="rounded-full p-2 bg-customDarkBlue placeholder:text-gray-900 w-1/2 focus:outline-none focus:ring-0 focus:border-none"
-          onChange={(e) => setSearch(e.target.value)}
+          className="rounded-full py-2 px-4 bg-customDarkBlue placeholder:text-gray-900 w-1/2 focus:outline-none focus:ring-0 focus:border-none"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <input type="checkbox" />
+        <details className="relative">
+          <summary className="list-none cursor-pointer bg-customDarkBlue py-2 px-4 rounded-md select-none">
+            Search by Tags
+          </summary>
+          <div className="absolute right-0 mt-2 w-56 max-h-64 overflow-y-auto bg-customGray p-3 rounded-md shadow-md z-10">
+            {tags.map((tag) => (
+              <label
+                key={tag.tag_id}
+                className="flex items-center gap-2 text-sm cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={searchTags.includes(tag.tag_name)}
+                  onChange={() => toggleSearchTag(tag.tag_name)}
+                />
+                <span>{tag.tag_name}</span>
+              </label>
+            ))}
+          </div>
+        </details>
+
         <button
-          className="bg-customGreen py-2 font-semibold px-4"
-          onClick={handleClick}
+          className="bg-customBrown py-2 px-4 font-semibold rounded-md"
+          onClick={clearSearch}
         >
-          Search
+          Clear Search
         </button>
-        <button className="bg-customDarkBlue py-2 px-4 font-semibold">
-          Add Event +
+        <button
+          className="bg-customGreen py-2 font-semibold px-10 rounded-md"
+          onClick={handleSearch}
+        >
+          Search Events
         </button>
       </div>
+
       <div className="flex flex-col gap-10">
-        {events
-          .sort((a, b) => a.date.getTime() - b.date.getTime())
-          .map((e) => (
-            <EventCard
-              key={e.id}
-              id={e.id}
-              name={e.title}
-              image={e.image}
-              location={e.location}
-              date={e.date}
-              description={e.description}
-              tags={e.tags}
-            />
-          ))}
+        {displayedEvents.map((e) => (
+          <EventCard
+            key={e.event_id}
+            id={e.event_id}
+            name={e.title}
+            image={e.image_url}
+            location={e.location_name}
+            date={e.start_time}
+            description={e.summary}
+            tags={e.event_tags}
+          />
+        ))}
       </div>
     </div>
   );

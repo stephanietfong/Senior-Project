@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@client/*": ["src/client/*"],
+      "@components/*": ["src/client/components/*"],
+      "@routes/*": ["src/client/routes/*"],
+      "@assets/*": ["src/client/assets/*"],
+      "@server/*": ["src/server/*"],
+      "@lib/*": ["src/server/lib/*"],
+      "@shared/*": ["src/shared/*"]
+    }
+  }
+}

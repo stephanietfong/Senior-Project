@@ -1,11 +1,13 @@
-import { SignUpBox } from "../components/SignUpBox";
-import "../Interests.css";
+import { SignUpBox } from "@components/SignUpBox";
+import "@client/Interests.css";
 
 export const InterestsPage = () => {
   return (
     <div className="sign-up-box">
       <SignUpBox>
-        <h1 className="interests-title">Tell us what interests you so we can curate a better experience.</h1>
+        <h1 className="interests-title">
+          Tell us what interests you so we can curate a better experience.
+        </h1>
         <h2 className="interests-subheader">Please choose at least three</h2>
         <div>
           <div className="row">
@@ -29,7 +31,7 @@ export const InterestsPage = () => {
             <button className="interest-button">Miscellaneous</button>
           </div>
           <div className="row">
-          <button className="submit-button">Continue</button>
+            <button className="submit-button">Continue</button>
           </div>
         </div>
       </SignUpBox>
