@@ -1,110 +1,84 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SignUpBox } from "@components/SignUpBox";
+import { supabase } from "../../server/supabase";
 
 export const VerificationPage = () => {
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(28);
-  const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (timer <= 0) return;
-    const interval = setInterval(() => setTimer((t) => t - 1), 1000);
-    return () => clearInterval(interval);
-  }, [timer]);
+  const email = location.state?.email || "";
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return; // digits only
-    const newCode = [...code];
-    newCode[index] = value.slice(-1); // only last char
-    setCode(newCode);
-    if (value && index < 5) {
-      inputs.current[index + 1]?.focus();
+  const handleResend = async () => {
+    try {
+      setLoading(true);
+      setErrorMsg(null);
+      setMessage(null);
+
+      if (!email) {
+        setErrorMsg("No email found to resend verification.");
+        return;
+      }
+
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+      });
+
+      if (error) throw error;
+
+      setMessage("Verification email sent again.");
+    } catch (err: any) {
+      setErrorMsg(err?.message || "Failed to resend verification email.");
+    } finally {
+      setLoading(false);
     }
   };
-
-  const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === "Backspace" && !code[index] && index > 0) {
-      inputs.current[index - 1]?.focus();
-    }
-  };
-
-  const handleVerify = () => {
-    const fullCode = code.join("");
-    console.log("Verifying code:", fullCode);
-  };
-
-  const handleResend = () => {
-    setTimer(28);
-    console.log("Resending verification email...");
-  };
-
-  // Render a single digit box
-  const DigitBox = ({ index }: { index: number }) => (
-    <input
-      ref={(el) => {
-        inputs.current[index] = el;
-      }}
-      type="text"
-      inputMode="numeric"
-      maxLength={1}
-      value={code[index]}
-      onChange={(e) => handleChange(index, e.target.value)}
-      onKeyDown={(e) => handleKeyDown(index, e)}
-      className="w-12 h-12 text-center text-lg rounded outline-none"
-      style={{
-        backgroundColor: "#ffffff",
-        border: "none",
-        color: "#333",
-        fontSize: "1.2rem",
-      }}
-    />
-  );
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center"
-      style={{ backgroundColor: "#e8f0e8" }}
-    >
+    <div className="min-h-screen flex items-center justify-center bg-customBeige">
       <SignUpBox>
         <div className="flex flex-col justify-center h-full px-10 py-8 gap-6">
-          {/* Message */}
-          <p className="text-black text-center" style={{ lineHeight: "1.5" }}>
-            We sent a verification code
-            <br />
-            to your inbox.
-          </p>
+          <h1 className="text-3xl text-black text-center font-semibold">
+            Check your email
+          </h1>
 
-          {/* Code inputs: 3 boxes — dash — 3 boxes */}
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <DigitBox index={0} />
-            <DigitBox index={1} />
-            <DigitBox index={2} />
-            <span className="text-black text-xl mx-1">—</span>
-            <DigitBox index={3} />
-            <DigitBox index={4} />
-            <DigitBox index={5} />
-          </div>
-
-          {/* Resend + timer */}
           <p className="text-black text-center" style={{ lineHeight: "1.6" }}>
-            Didn't get it?{" "}
-            <span
-              className="underline cursor-pointer hover:opacity-80"
-              onClick={timer === 0 ? handleResend : undefined}
-            >
-              Resend verification email
-            </span>
-            {timer > 0 && <> in {timer} seconds...</>}
+            We sent a verification link to:
+            <br />
+            <span className="font-semibold">{email || "your email"}</span>
           </p>
 
-          {/* {Verify button} */}
-          <div className="flex flex-col items-center gap-6">
+          <p className="text-black text-center text-sm">
+            Open the email and click the confirmation link, then come back and
+            log in.
+          </p>
+
+          {message && (
+            <p className="text-center text-sm text-green-700">{message}</p>
+          )}
+
+          {errorMsg && (
+            <p className="text-center text-sm text-red-600">{errorMsg}</p>
+          )}
+
+          <div className="flex flex-col items-center gap-4">
             <button
-              onClick={handleVerify}
-              className="px-10 py-2 rounded text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: "#99aa55", color: "#333" }}
+              onClick={handleResend}
+              disabled={loading}
+              className="px-10 py-2 rounded text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity bg-customGreen text-black disabled:opacity-60"
             >
-              Verify →
+              {loading ? "Sending..." : "Resend verification email"}
+            </button>
+
+            <button
+              onClick={() => navigate("/login")}
+              className="px-10 py-2 rounded text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity bg-customDarkBlue text-black"
+            >
+              Go to Login
             </button>
           </div>
         </div>

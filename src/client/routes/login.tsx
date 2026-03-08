@@ -2,19 +2,45 @@ import { useState } from "react";
 import React from "react";
 import { SignUpBox } from "@components/SignUpBox";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../server/supabase";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    console.log("Login attempted", { email, password });
-  };
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const navigate = useNavigate();
+
   const handleBack = () => {
-    console.log("Back button clicked");
     navigate(-1);
+  };
+
+  const handleLogin = async () => {
+    try {
+      setErrorMsg(null);
+
+      if (!email.trim() || !password.trim()) {
+        setErrorMsg("Please enter both email and password.");
+        return;
+      }
+
+      setLoading(true);
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) throw error;
+
+      navigate("/events");
+    } catch (err: any) {
+      setErrorMsg(err?.message || "Login failed.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,6 +51,7 @@ export const LoginPage = () => {
       >
         ← Back
       </button>
+
       <SignUpBox>
         <div className="relative flex flex-col items-center justify-center h-full px-16">
           <h1
@@ -33,6 +60,12 @@ export const LoginPage = () => {
           >
             Sign into your account
           </h1>
+
+          {errorMsg && (
+            <p className="w-full mb-4 text-sm text-red-600 text-center">
+              {errorMsg}
+            </p>
+          )}
 
           <div className="w-full mb-5">
             <label className="block text-black text-base mb-1">Email</label>
@@ -56,13 +89,17 @@ export const LoginPage = () => {
 
           <button
             onClick={handleLogin}
-            className="bg-customGreen px-10 py-2 rounded text-base font-medium cursor-pointer hover:opacity-90 transition-opacity mb-4 text-black"
+            disabled={loading}
+            className="bg-customGreen px-10 py-2 rounded text-base font-medium cursor-pointer hover:opacity-90 transition-opacity mb-4 text-black disabled:opacity-60"
           >
-            Log in
+            {loading ? "Logging in..." : "Log in"}
           </button>
 
-          <p className="text-center text-sm text-black cursor-pointer hover:underline hover:opacity-80">
-            Forgot your password?
+          <p
+            className="text-center text-sm text-black cursor-pointer hover:underline hover:opacity-80"
+            onClick={() => navigate("/signup")}
+          >
+            Don&apos;t have an account? Sign up
           </p>
         </div>
       </SignUpBox>

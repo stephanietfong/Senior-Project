@@ -3,7 +3,7 @@ CREATE TABLE users (
   user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   display_name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255), -- TEMPORARILYY removed NOT NULL because password auth is handled by supabase Auth (auth.users). This column is not actually being used now because of that  but i kept temporarily for compatibility for now
   date_of_birth DATE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
