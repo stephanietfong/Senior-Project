@@ -40,6 +40,7 @@ export const LoginPage = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
               className="w-full rounded px-2 py-1 text-sm outline-none bg-customBeige border-none text-black"
             />
           </div>
@@ -50,10 +51,12 @@ export const LoginPage = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter Password"
               className="w-full rounded px-2 py-1 text-sm outline-none bg-customBeige border-none text-black"
             />
-          </div>
 
+          </div>
+    
           <button
             onClick={handleLogin}
             className="bg-customGreen px-10 py-2 rounded text-base font-medium cursor-pointer hover:opacity-90 transition-opacity mb-4 text-black"
