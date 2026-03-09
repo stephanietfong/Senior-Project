@@ -2,13 +2,34 @@ import { useState } from "react";
 import React from "react";
 import { SignUpBox } from "@components/SignUpBox";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@server/supabase";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleLogin = () => {
-    console.log("Login attempted", { email, password });
+  const handleLogin = async () => {
+    setErrorMsg(null);
+    if (!email.trim()) return setErrorMsg("Please enter your email.");
+    if (!password) return setErrorMsg("Please enter your password.");
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+
+      // Redirect after successful login
+      navigate("/");
+    } catch (err: any) {
+      setErrorMsg(err.message || String(err));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const navigate = useNavigate();
@@ -56,10 +77,17 @@ export const LoginPage = () => {
 
           <button
             onClick={handleLogin}
-            className="bg-customGreen px-10 py-2 rounded text-base font-medium cursor-pointer hover:opacity-90 transition-opacity mb-4 text-black"
+            disabled={loading}
+            className={`bg-customGreen px-10 py-2 rounded text-base font-medium transition-opacity mb-4 text-black w-full ${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
+            }`}
           >
-            Log in
+            {loading ? "Logging in..." : "Log in"}
           </button>
+
+          {errorMsg && (
+            <p className="text-sm text-red-600 text-center mb-4">{errorMsg}</p>
+          )}
 
           <p className="text-center text-sm text-black cursor-pointer hover:underline hover:opacity-80">
             Forgot your password?
