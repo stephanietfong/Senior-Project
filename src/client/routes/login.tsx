@@ -24,7 +24,7 @@ export const LoginPage = () => {
       if (error) throw error;
 
       // Redirect after successful login
-      navigate("/");
+      navigate("/events");
     } catch (err: any) {
       setErrorMsg(err.message || String(err));
     } finally {

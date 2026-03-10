@@ -52,14 +52,19 @@ export const SignUpPage = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const redirectTo = `${window.location.origin}/events`;
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: redirectTo },
+      });
       if (error) {
         throw error;
-      } 
+      }
 
       const userId = data.user?.id;
       if (userId) {
-          await createProfile(userId);
+        await createProfile(userId);
       }
 
       navigate("/verification", { state: { email } });
