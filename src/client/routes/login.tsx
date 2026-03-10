@@ -17,6 +17,8 @@ export const LoginPage = () => {
     navigate(-1);
   };
 
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-customBeige">
       <button
@@ -45,16 +47,22 @@ export const LoginPage = () => {
             />
           </div>
 
-          <div className="w-full mb-8">
+          <div className="w-full mb-8 relative group">
             <label className="block text-black text-base mb-1">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter Password"
               className="w-full rounded px-2 py-1 text-sm outline-none bg-customBeige border-none text-black"
             />
-
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-2 translate-y-1 text-xs text-gray-500 hover:text-black cursor-pointer"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
           </div>
     
           <button
