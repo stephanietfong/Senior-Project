@@ -8,79 +8,93 @@ export const Settings = () => {
       <button onClick={() => setIsOpen(true)}>Settings</button>
       {isOpen && (
         <div
+          onClick={() => setIsOpen(false)}
           style={{
-            backgroundColor: "#FAF7ED",
-            border: "2px solid black",
-            borderRadius: 5,
-            width: 400,
-            fontFamily: "Sans-Serif",
+            position: "fixed",
+            inset: 0,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.25)",
+            zIndex: 1000,
           }}
         >
           <div
+            onClick={(event) => event.stopPropagation()}
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "10px 0 10px 0",
-              borderBottom: "2px solid black",
+              backgroundColor: "#FAF7ED",
+              border: "2px solid black",
+              borderRadius: 5,
+              width: 400,
+              fontFamily: "Sans-Serif",
             }}
           >
-            <h1 style={{ fontSize: 24 }}>Settings</h1>
-          </div>
-          <div
-            style={{
-              backgroundColor: "#9CADD8",
-              padding: 10,
-              borderRadius: 1,
-            }}
-          >
-            <button
-              onClick={() => setIsOpen(false)}
+            <div
               style={{
-                top: 10,
-                right: 10,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "10px 0 10px 0",
+                borderBottom: "2px solid black",
               }}
             >
-              <img src={BackArrow} alt="Close" width={25} height={25} />
-            </button>
-            <p
+              <h1 style={{ fontSize: 24 }}>Settings</h1>
+            </div>
+            <div
               style={{
-                justifySelf: "center",
-                fontWeight: "bold",
-                fontSize: 18,
-                marginBottom: 10,
+                backgroundColor: "#9CADD8",
+                padding: 10,
+                borderRadius: 1,
               }}
             >
-              Notification Settings
-            </p>
-            <p>Event Reminders</p>
-            <input
-              type="checkbox"
-              style={{
-                marginLeft: 10,
-                backgroundColor: "white",
-              }}
-            ></input>
-            <p>Interested Notifications</p>
-            <input
-              type="checkbox"
-              style={{
-                marginLeft: 10,
-                backgroundColor: "white",
-              }}
-            ></input>
-            <br></br>
-            <button
-              style={{
-                marginTop: 10,
-                backgroundColor: "#BAC67A",
-                marginLeft: 280,
-                padding: "5px 15px",
-                borderRadius: 5,
-              }}
-            >
-              Apply
-            </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                style={{
+                  top: 10,
+                  right: 10,
+                }}
+              >
+                <img src={BackArrow} alt="Close" width={25} height={25} />
+              </button>
+              <p
+                style={{
+                  justifySelf: "center",
+                  fontWeight: "bold",
+                  fontSize: 18,
+                  marginBottom: 10,
+                }}
+              >
+                Notification Settings
+              </p>
+              <p>Event Reminders</p>
+              <input
+                type="checkbox"
+                style={{
+                  marginLeft: 10,
+                  backgroundColor: "white",
+                }}
+              ></input>
+              <p>Interested Notifications</p>
+              <input
+                type="checkbox"
+                style={{
+                  marginLeft: 10,
+                  backgroundColor: "white",
+                }}
+              ></input>
+              <br></br>
+              <button
+                style={{
+                  marginTop: 10,
+                  backgroundColor: "#BAC67A",
+                  marginLeft: 280,
+                  padding: "5px 15px",
+                  borderRadius: 5,
+                }}
+              >
+                Apply
+              </button>
+            </div>
           </div>
         </div>
       )}
