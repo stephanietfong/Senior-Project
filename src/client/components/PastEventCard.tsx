@@ -45,9 +45,9 @@ const ImageBox: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
 
 export const PastEventCard: React.FC<Props> = ({ event, onDetails }) => {
   return (
-    <div className="grid grid-cols-[160px,1fr,180px] gap-6 p-5 bg-white text-black font-redhat rounded-2xl border border-black/10 shadow-sm">
+    <div className="w-[900px] grid grid-cols-[160px,1fr,180px] gap-6 p-5 bg-white text-black font-redhat rounded-2xl border border-black/10 shadow-sm">
       {/* Image */}
-      <div className="w-full h-[120px]">
+      <div className="w-full h-full">
         <ImageBox src={event.imageSrc} alt={event.title} />
       </div>
 

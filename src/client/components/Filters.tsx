@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getAllTags } from "@lib/tags";
 
 const cardStyle: React.CSSProperties = {
 	background: '#FAF7ED',
@@ -12,16 +13,28 @@ const cardStyle: React.CSSProperties = {
 	fontFamily: 'Inder, sans-serif',
 	overflowY: 'auto', 
 	maxHeight: '400px',
+	padding: '20px',
 };
 
 
 export const Filters: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
 	const [radius, setRadius] = useState(25);
 	const [useLocation, setUseLocation] = useState(false);
-	const filterOptions = [
-		'Food', 'Art', 'Houseparty', 'Clubs', 'Career', 'Theater', 'Comm. Mtgs.', '21+ Drinks', 'Shopping', 'Miscellaneous'
-	];
+	const [filterOptions, setFilterOptions] = useState<string[]>([]);
 	const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+
+	useEffect(() => {
+		const fetchTags = async () => {
+			try {
+				const tags = await getAllTags();
+				setFilterOptions((tags ?? []).map((tag: any) => tag.tag_name));
+			} catch (error) {
+				console.error("Error fetching tags:", error);
+			}
+		};
+
+		fetchTags();
+	}, []);
 
 	const toggleFilter = (filter: string) => {
 		setSelectedFilters(selectedFilters =>
@@ -33,7 +46,7 @@ export const Filters: React.FC<React.PropsWithChildren<{}>> = ({ children }) => 
 
 	return (
 		<div style={cardStyle}>
-			<h2>Discovery Settings</h2>
+			<h2 style={{fontWeight: "bold"}}>Discovery Settings</h2>
 			<div style={{ width: '90%', marginTop: 16 }}>
 							<h3 style={{ margin: 0 }}>Search Radius</h3>
 							<input
