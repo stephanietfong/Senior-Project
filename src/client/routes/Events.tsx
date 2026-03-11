@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { EventCard } from "@components/EventCard";
+import { Filters } from "@components/Filters";
 import { getAllEvents } from "@lib/events";
 import { getAllTags } from "@lib/tags";
 
@@ -10,6 +11,7 @@ export const EventsPage = () => {
   const [displayedEvents, setDisplayedEvents] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchTags, setSearchTags] = useState<string[]>([]);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   useEffect(() => {
     const fetchAllEvents = async () => {
@@ -81,27 +83,12 @@ export const EventsPage = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <details className="relative">
-          <summary className="list-none cursor-pointer bg-customDarkBlue py-2 px-4 rounded-md select-none">
-            Search by Tags
-          </summary>
-          <div className="absolute right-0 mt-2 w-56 max-h-64 overflow-y-auto bg-customGray p-3 rounded-md shadow-md z-10">
-            {tags.map((tag) => (
-              <label
-                key={tag.tag_id}
-                className="flex items-center gap-2 text-sm cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={searchTags.includes(tag.tag_name)}
-                  onChange={() => toggleSearchTag(tag.tag_name)}
-                />
-                <span>{tag.tag_name}</span>
-              </label>
-            ))}
-          </div>
-        </details>
-
+        <button
+          className="list-none cursor-pointer bg-customDarkBlue py-2 px-4 rounded-md select-none font-semibold"
+          onClick={() => setIsFiltersOpen(true)}
+        >
+          Filter Search
+        </button>
         <button
           className="bg-customBrown py-2 px-4 font-semibold rounded-md"
           onClick={clearSearch}
@@ -115,6 +102,24 @@ export const EventsPage = () => {
           Search Events
         </button>
       </div>
+
+      {isFiltersOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+          onClick={() => setIsFiltersOpen(false)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            <Filters>
+              <button
+                className="mt-4 rounded-md bg-customDarkBlue px-4 py-2 font-semibold"
+                onClick={() => setIsFiltersOpen(false)}
+              >
+                Close
+              </button>
+            </Filters>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col gap-10">
         {displayedEvents.map((e) => (
