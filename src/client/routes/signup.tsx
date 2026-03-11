@@ -2,6 +2,7 @@ import { useState } from "react";
 import React from "react";
 import { SignUpBox } from "@components/SignUpBox";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@server/supabase";
 
 export const SignUpPage = () => {
   const [name, setName] = useState("");
@@ -10,36 +11,87 @@ export const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSignUp = () => {
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const validateForm = () => {
+    if (!name.trim()) {
+      return "Please enter your name.";
+    }
+    if (!email.trim()) {
+      return "Please enter your email.";
+    }
+    if (!password) {
+      return "Please enter a password.";
+    } 
+    if (password !== confirmPassword) {
+      return "Passwords do not match.";
+    }
     if (!passwordValid) {
-      console.log("Password does not meet requirements");
-      return;
+      return "Password does not meet requirements.";
     }
-    if (!passwordsMatch) {
-      console.log("Passwords do not match");
-      return;
-    }
-    console.log("Sign up attempted", {
-      name,
-      dob,
-      email,
-      password,
-      confirmPassword,
-    });
+    return null;
   };
 
-  const navigate = useNavigate();
+  const createProfile = async (userId: string) => {
+    const { error: insertError } = await supabase.from("users").insert({
+      user_id: userId,
+      email,
+      display_name: name,
+      date_of_birth: dob || null,
+    });
+    if (insertError) {
+      throw insertError;
+    } 
+  };
+
+  const handleSignUp = async () => {
+    setErrorMsg(null);
+    const validationError = validateForm();
+    if (validationError){
+      return setErrorMsg(validationError);
+    }
+
+    setLoading(true);
+    try {
+      const redirectTo = `${window.location.origin}/events`;
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: redirectTo },
+      });
+      if (error) {
+        throw error;
+      }
+
+      const userId = data.user?.id;
+      if (userId) {
+        await createProfile(userId);
+      }
+
+      navigate("/verification", { state: { email } });
+    } catch (err: any) {
+      setErrorMsg(err.message || String(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBack = () => {
     console.log("Back button clicked");
     navigate(-1);
   };
 
   const passwordRules = [
-    { label: "At least 8 characters", test: (p) => p.length >= 8 },
-    { label: "One uppercase letter", test: (p) => /[A-Z]/.test(p) },
-    { label: "One number", test: (p) => /[0-9]/.test(p) },
-    { label: "One special character", test: (p) => /[!@#$%^&*(),.?":{}|<>]/.test(p) },
-  ];
+  { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
+  { label: "One uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+  { label: "One number", test: (p: string) => /[0-9]/.test(p) },
+  {
+    label: "One special character",
+    test: (p: string) => /[!@#$%^&*(),.?":{}|<>]/.test(p),
+  },
+];
 
   const passwordValid = passwordRules.every((rule) => rule.test(password));
 
@@ -153,12 +205,20 @@ export const SignUpPage = () => {
           </div>
           {/* Sign Up Button */}
           <div className="flex justify-center">
-            <button
-              onClick={handleSignUp}
-              className="bg-customGreen px-10 py-2 rounded text-base font-medium cursor-pointer hover:opacity-90 transition-opacity text-black"
-            >
-              Sign Up
-            </button>
+            <div className="flex flex-col items-center gap-3 w-full">
+              {errorMsg && (
+                <p className="text-sm text-red-600 text-center">{errorMsg}</p>
+              )}
+              <button
+                onClick={handleSignUp}
+                disabled={loading}
+                className={`px-10 py-2 rounded text-base font-medium transition-opacity w-full ${
+                  loading ? "bg-gray-400 text-gray-800 cursor-not-allowed" : "bg-customGreen text-black hover:opacity-90 cursor-pointer"
+                }`}
+              >
+                {loading ? "Creating account..." : "Sign Up"}
+              </button>
+            </div>
           </div>
         </div>
       </SignUpBox>
