@@ -32,13 +32,17 @@ export const getUpcomingRSVPEventsForUser = async (userId: string) => {
       )
     `,
     )
-    .eq("user_id", userId)
-    .gt("event.start_time", nowIso)
-    .order("event.start_time", { ascending: true });
+    .eq("user_id", userId);
 
   if (error) throw error;
 
-  return (data || []).filter((row: any) => row.event);
+  const rows = (data || [])
+    .filter((row: any) => row.event && row.event.start_time > nowIso)
+    .sort((a: any, b: any) =>
+      a.event.start_time.localeCompare(b.event.start_time),
+    );
+
+  return rows;
 };
 
 export const getRSVPCountForEvent = async (eventId: string) => {
