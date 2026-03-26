@@ -127,10 +127,9 @@ export const SignUpPage = () => {
               Date of Birth
             </label>
             <input
-              type="text"
+              type="date"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
-              placeholder="MM/DD/YYYY"
               className="w-full rounded px-2 py-1 text-sm outline-none bg-customBeige border-none text-black"
             />
           </div>
