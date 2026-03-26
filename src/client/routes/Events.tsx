@@ -3,6 +3,8 @@ import { EventCard } from "@components/EventCard";
 import { Filters } from "@components/Filters";
 import { getAllEvents } from "@lib/events";
 import { getAllTags } from "@lib/tags";
+import { getUserInterests } from "@lib/interests";
+import { getCurrentUser } from "@lib/users";
 
 export const EventsPage = () => {
   const [loading, setLoading] = useState(true);
@@ -14,30 +16,46 @@ export const EventsPage = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   useEffect(() => {
-    const fetchAllEvents = async () => {
+    const fetchAll = async () => {
       try {
-        const events = await getAllEvents();
+        const [fetchedEvents, fetchedTags] = await Promise.all([
+          getAllEvents(),
+          getAllTags(),
+        ]);
 
-        setEvents(events);
-        setDisplayedEvents(events);
+        const allEvents = fetchedEvents ?? [];
+        setTags(fetchedTags ?? []);
+
+        // Sort events with matching user interests first
+        const user = await getCurrentUser();
+        if (user) {
+          const interests = await getUserInterests(user.id);
+          const interestTagIds = new Set(interests.map((t: any) => t.tag_id));
+          const sorted = [...allEvents].sort((a, b) => {
+            const aMatches = a.event_tags?.some((et: any) =>
+              interestTagIds.has(et.tags?.tag_id),
+            );
+            const bMatches = b.event_tags?.some((et: any) =>
+              interestTagIds.has(et.tags?.tag_id),
+            );
+            if (aMatches && !bMatches) return -1;
+            if (!aMatches && bMatches) return 1;
+            return 0;
+          });
+          setEvents(sorted);
+          setDisplayedEvents(sorted);
+        } else {
+          setEvents(allEvents);
+          setDisplayedEvents(allEvents);
+        }
+
         setLoading(false);
-        console.log(events);
       } catch (error) {
         console.error("Error fetching events:", error);
       }
     };
 
-    const fetchAllTags = async () => {
-      try {
-        const tags = await getAllTags();
-
-        setTags(tags ?? []);
-      } catch (error) {
-        console.error("Error fetching tags:", error);
-      }
-    };
-    fetchAllEvents();
-    fetchAllTags();
+    fetchAll();
   }, []);
 
   function handleSearch(): void {

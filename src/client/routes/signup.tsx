@@ -70,7 +70,7 @@ export const SignUpPage = () => {
         await createProfile(userId);
       }
 
-      navigate("/verification", { state: { email } });
+      navigate("/interests");
     } catch (err: any) {
       setErrorMsg(err.message || String(err));
     } finally {

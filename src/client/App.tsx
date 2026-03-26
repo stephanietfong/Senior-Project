@@ -15,6 +15,7 @@ import { Footer } from "./components/Footer";
 import { SectionHeaderLayout } from "./components/SectionHeaderLayout";
 import { SettingsPage } from "./routes/Settings";
 import { MyEventsPage } from "./routes/MyEvents";
+import { InterestsPage } from "./routes/Interests";
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="/coordinator" element={<CoordinatorViewPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/interests" element={<InterestsPage />} />
             <Route path="/verification" element={<VerificationPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/contact" element={<ContactUsPage />} />
