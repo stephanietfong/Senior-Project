@@ -35,8 +35,15 @@ export const EventDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState<any>({});
-  const [user, setUser] = useState<any>(null);
-  const [interested, setInterested] = useState(false);
+  const mapQuery = event.address || event.location_name || "";
+  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as
+    | string
+    | undefined;
+  const mapEmbedUrl = mapQuery
+    ? googleMapsApiKey
+      ? `https://www.google.com/maps/embed/v1/place?key=${googleMapsApiKey}&q=${encodeURIComponent(mapQuery)}`
+      : `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=15&output=embed`
+    : null;
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -142,8 +149,20 @@ export const EventDetails = () => {
 
       <div className="flex flex-col items-center gap-4">
         <p className="text-3xl font-medium">Location</p>
-        <p>{event.location_name}</p>
-        <p>Note: I will link the image later -Stephanie</p>
+        <p>{event.location_name || "Location TBD"}</p>
+        Note: I will link the image later -Stephanie
+        <p>{event.address || "Address unavailable"}</p>
+        {mapEmbedUrl ? (
+          <iframe
+            title="Event location map"
+            src={mapEmbedUrl}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="w-[36rem] h-80 rounded"
+          />
+        ) : (
+          <p className="text-sm text-black/60">Map unavailable for this event.</p>
+        )}
       </div>
 
       {interested ? (
