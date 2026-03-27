@@ -35,6 +35,8 @@ export const EventDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState<any>({});
+  const [user, setUser] = useState<any>(null);
+  const [interested, setInterested] = useState(false);
   const mapQuery = event.address || event.location_name || "";
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as
     | string
