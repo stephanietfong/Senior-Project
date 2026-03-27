@@ -26,7 +26,6 @@ export const EventsPage = () => {
         const allEvents = fetchedEvents ?? [];
         setTags(fetchedTags ?? []);
 
-        // Sort events with matching user interests first
         const user = await getCurrentUser();
         if (user) {
           const interests = await getUserInterests(user.id);
