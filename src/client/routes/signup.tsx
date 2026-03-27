@@ -70,7 +70,7 @@ export const SignUpPage = () => {
         await createProfile(userId);
       }
 
-      navigate("/verification", { state: { email } });
+      navigate("/interests");
     } catch (err: any) {
       setErrorMsg(err.message || String(err));
     } finally {
@@ -127,11 +127,10 @@ export const SignUpPage = () => {
               Date of Birth
             </label>
             <input
-              type="text"
+              type="date"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
-              placeholder="MM/DD/YYYY"
-              className="w-full rounded px-2 py-1 text-sm outline-none bg-customBeige border-none text-black"
+              className="w-full rounded px-2 py-1 text-sm outline-none bg-customBeige border-none text-black uppercase"
             />
           </div>
 
