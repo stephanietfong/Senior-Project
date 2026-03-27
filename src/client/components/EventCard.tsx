@@ -12,7 +12,7 @@ interface EventCardProps {
   location: string;
   date: Date;
   description: string;
-  tags: { tags: Tag }[];
+  tags?: { tags: Tag }[];
 }
 
 function calculateDate(date: Date) {
@@ -57,7 +57,7 @@ export const EventCard: React.FC<EventCardProps> = ({
         </div>
         <p className="word-wrap text-sm">{description}</p>
         <div className="flex flex-wrap gap-2">
-          {tags.map((tag) => (
+          {tags?.map((tag) => (
             <TagIcon key={tag.tags.tag_id} tag={tag.tags.tag_name} />
           ))}
         </div>

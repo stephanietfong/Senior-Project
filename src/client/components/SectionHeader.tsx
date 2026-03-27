@@ -38,17 +38,17 @@ export function SectionHeader() {
                 onClick={handleNavigate}
                 className="block px-4 py-2 text-black hover:opacity-80"
               >
-                My Events
+                My Hosted Events
               </Link>
               <Link
                 to="/upcoming"
                 onClick={handleNavigate}
                 className="block px-4 py-2 text-black hover:opacity-80"
               >
-                Upcoming Events
+                Interested Events
               </Link>
               <div className="block px-4 py-2 text-black">
-              <Settings />
+                <Settings />
               </div>
             </div>
           )}
