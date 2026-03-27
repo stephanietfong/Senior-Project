@@ -24,7 +24,6 @@ export const getUpcomingRSVPEventsForUser = async (userId: string) => {
     .from("rsvps")
     .select(
       `
-      status,
       event:events(
         *,
         host:users(user_id, display_name),
@@ -56,17 +55,12 @@ export const getRSVPCountForEvent = async (eventId: string) => {
 };
 
 // CREATE OR UPDATE RSVP
-export const createOrUpdateRSVP = async (
-  userId: string,
-  eventId: string,
-  status: "Maybe" | "Going",
-) => {
+export const createOrUpdateRSVP = async (userId: string, eventId: string) => {
   const { data, error } = await supabase
     .from("rsvps")
     .upsert({
       user_id: userId,
       event_id: eventId,
-      status,
     })
     .select()
     .single();
@@ -84,4 +78,23 @@ export const deleteRSVP = async (userId: string, eventId: string) => {
     .eq("event_id", eventId);
 
   if (error) throw error;
+};
+
+// CHECK IF A USER HAS RSVPED TO AN EVENT
+export const checkRSVPForSingleUserAndEvent = async (
+  userId: string,
+  eventId: string,
+) => {
+  const { count, error } = await supabase
+    .from("rsvps")
+    .select("rsvp_id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("event_id", eventId);
+
+  if (error) throw error;
+
+  if (count === 1) {
+    return true;
+  }
+  return false;
 };

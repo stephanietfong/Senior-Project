@@ -18,8 +18,8 @@ export const EventsPage = () => {
       try {
         const events = await getAllEvents();
 
-        setEvents(events ?? []);
-        setDisplayedEvents(events ?? []);
+        setEvents(events);
+        setDisplayedEvents(events);
         setLoading(false);
         console.log(events);
       } catch (error) {
