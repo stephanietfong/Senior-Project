@@ -7,6 +7,7 @@ import greenbullet from "@assets/greenbullet.png";
 import { getCurrentUser } from "@/server/lib/users";
 import {
   createOrUpdateRSVP,
+  deleteRSVP,
   checkRSVPForSingleUserAndEvent,
 } from "@/server/lib/rsvps";
 
@@ -37,6 +38,7 @@ export const EventDetails = () => {
   const [event, setEvent] = useState<any>({});
   const [user, setUser] = useState<any>(null);
   const [interested, setInterested] = useState(false);
+
   const mapQuery = event.address || event.location_name || "";
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as
     | string
@@ -84,16 +86,28 @@ export const EventDetails = () => {
     fetchCurrentUserAndInterest();
   }, [id]);
 
-  const handleInterest = async () => {
+  const handleAddInterest = async () => {
     try {
       if (id) {
         const data = await createOrUpdateRSVP(
           user.id.toString(),
           id.toString(),
         );
+        setInterested(true);
       }
     } catch (error) {
       console.error("Error creating RSVP:", error);
+    }
+  };
+
+  const handleRemoveInterest = async () => {
+    try {
+      if (id) {
+        await deleteRSVP(user.id.toString(), id.toString());
+        setInterested(false);
+      }
+    } catch (error) {
+      console.error("Error deleting RSVP:", error);
     }
   };
 
@@ -113,13 +127,13 @@ export const EventDetails = () => {
       <h1 className="text-5xl font-bold w-full text-center font-oswald mt-[-40px]">
         {event.title}
       </h1>
-      <div className="flex flex-row gap-10 items-center justify-center">
+      <div className="flex flex-row h-[36rem] gap-10 items-center justify-center">
         <img
           src={event.image_url}
           alt={`Event: ${event.title}`}
-          className="w-[36rem] h-auto shadow-lg"
+          className="w-[36rem] shadow-lg"
         />
-        <div className="flex flex-col p-4 gap-4">
+        <div className="flex flex-col p-10 gap-6 h-full">
           <ul className="gap-2 flex flex-col">
             <li className="flex items-center gap-2">
               <img src={bluebullet} alt="" className="w-6 h-6" />
@@ -151,9 +165,6 @@ export const EventDetails = () => {
 
       <div className="flex flex-col items-center gap-4">
         <p className="text-3xl font-medium">Location</p>
-        <p>{event.location_name || "Location TBD"}</p>
-        Note: I will link the image later -Stephanie
-        <p>{event.address || "Address unavailable"}</p>
         {mapEmbedUrl ? (
           <iframe
             title="Event location map"
@@ -163,23 +174,26 @@ export const EventDetails = () => {
             className="w-[36rem] h-80 rounded"
           />
         ) : (
-          <p className="text-sm text-black/60">Map unavailable for this event.</p>
+          <p className="text-sm text-black/60">
+            Map unavailable for this event.
+          </p>
         )}
       </div>
 
       {interested ? (
         <button
           className="bg-customGreen text-white p-4 rounded font-semibold min-w-24"
-          disabled={true}
+          onClick={() => handleRemoveInterest()}
         >
-          You've marked your interest in this event
+          You've marked your interest in this event. Click to unmark your
+          interest.
         </button>
       ) : (
         <button
           className="bg-customDarkBlue text-white p-4 rounded font-semibold min-w-24"
-          onClick={() => handleInterest()}
+          onClick={() => handleAddInterest()}
         >
-          Mark this event as Interested
+          Mark this event as Interested!
         </button>
       )}
     </div>
