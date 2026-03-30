@@ -1,27 +1,107 @@
 import { useState, useEffect } from 'react';
-import { PastEventCard } from '../components/PastEventCard';
+import { PastEvent, PastEventCard } from '../components/PastEventCard';
 import thumbsUpIcon from '@assets/thumbs-up.png';
-import potluckPoster from '@assets/potluckPoster.png';
-import festivalPoster from '@assets/musicFestival.jpg';
+import blackThumbsUpIcon from '@assets/black-thumbs-up.png';
 import forwardArrow from '@assets/forwardarrow.png';
 import backArrow from '@assets/backarrow.png';
+import { getCurrentUser } from "@lib/users";
+import { getHostedEvents } from "@lib/events";
+import { getPastEvents } from '@lib/events';
 
 
-export function MyEventsPage() {
+function daysAgoText(endTimeIso: string) {
+  const now = new Date();
+  const end = new Date(endTimeIso);
+  const diff = Math.floor((now.getTime() - end.getTime()) / (24 * 3600 * 1000));
+  if (diff <= 0) return "1 Day Ago";
+  if (diff === 1) return "1 day ago";
+  return `${diff} days ago`;
+}
 
-  const [hostedEvents, setHostedEvents] = useState<{ id: number; title: string; date: string; description: string; daysAgoText: string; likedText: string; tags: string[]; imageSrc: string }[]>([]);
-  const [attendedEvents, setAttendedEvents] = useState<{ id: number; title: string; date: string; description: string; daysAgoText: string; likedText: string; tags: string[]; imageSrc: string }[]>([]);
+export const MyEventsPage = () => {
+
+  const [hostedEvents, setHostedEvents] = useState<PastEvent[]>([]);
+  const [attendedEvents, setAttendedEvents] = useState<PastEvent[]>([]);
+  const [hostedIndex, setHostedIndex] = useState(0);
+  const [attendedIndex, setAttendedIndex] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    
-    setHostedEvents([
-      { id: 1, title: "Spring Potluck", date: "2024-01-15", description: "Bring your favorite dish to share!", daysAgoText: "2 days ago", likedText: "0 likes", tags: ["Music", "Art", "Tech"], imageSrc: potluckPoster },
-    ]);
+    const run = async () => {
+      try {
+      
 
-    setAttendedEvents([
-      { id: 2, title: "Music Festival", date: "2019-03-20", description: "Enjoy the best music and art performances from top artists.", daysAgoText: "2391 days ago", likedText: "0 likes", tags: ["Music", "Art", "21+", "Drinks"], imageSrc: festivalPoster },
-    ]);
+        const authUser = await getCurrentUser();
+        if (!authUser) {
+          setAttendedEvents([]);
+          setHostedEvents([]);
+          return;
+        }
+
+        const hosted = await getHostedEvents(authUser.id);
+        const attended = await getPastEvents(authUser.id);
+        const now = new Date();
+        const hostedPast = (hosted || []).filter(
+          (e: any) => e?.end_time && new Date(e.end_time) < now,
+        );
+
+        const mappedHosted: PastEvent[] = hostedPast.map(
+          (e: any) => ({
+            id: e.event_id,
+            title: e.title,
+            description: e.summary || "—",
+            daysAgoText: daysAgoText(e.end_time),
+            likedText: ``,
+            tags:
+              (e.event_tags || [])
+                .map((et: any) => et?.tags?.tag_name)
+                .filter(Boolean) || [],
+            imageSrc: e.image_url || "",
+          }),
+        );
+
+        const mappedAttended: PastEvent[] = (attended || []).map(
+          (e: any) => ({
+            id: e.event_id,
+            title: e.title,
+            description: e.summary || "—",
+            daysAgoText: daysAgoText(e.end_time),
+            likedText: ``,
+            tags:
+              (e.event_tags || [])
+                .map((et: any) => et?.tags?.tag_name)
+                .filter(Boolean) || [],
+            imageSrc: e.image_url || "",
+          }),
+        );
+
+        setHostedEvents(mappedHosted);
+        setAttendedEvents(mappedAttended);
+        setHostedIndex(0);
+        setAttendedIndex(0);
+      } catch (err: any) {
+        
+      } finally {
+        
+      }
+    };
+
+    run();
   }, []);
+
+  const handleHostedBack = () => {
+    setHostedIndex((prev) => (hostedEvents.length === 0 ? 0 : (prev - 1 + hostedEvents.length) % hostedEvents.length));
+  };
+  const handleHostedForward = () => {
+    setHostedIndex((prev) => (hostedEvents.length === 0 ? 0 : (prev + 1) % hostedEvents.length));
+  };
+  const handleAttendedBack = () => {
+    setAttendedIndex((prev) => (attendedEvents.length === 0 ? 0 : (prev - 1 + attendedEvents.length) % attendedEvents.length));
+  };
+  const handleAttendedForward = () => {
+    setAttendedIndex((prev) => (attendedEvents.length === 0 ? 0 : (prev + 1) % attendedEvents.length));
+  };
 
   return (
     <>
@@ -30,27 +110,33 @@ export function MyEventsPage() {
           margin: 15px;
           display: flex;
           gap: 20px;
+          align-items: center;
+          height: 250px;
         }
       `}</style>
       <div className="py-10 px-6 text-black" style={{
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
         <h1 className="text-5xl font-oswald">Events Hosted by Me</h1>
         <div className="carousel">
-          <button><img src={backArrow} alt="Back" style={{ width: '40px', height: '40px' }}/></button>
-          {hostedEvents.map((event) => (
-            <PastEventCard key={event.id} event={event} />
-          ))}
-          <button><img src={forwardArrow} alt="Next" style={{ width: '40px', height: '40px' }}/></button>
+          <button onClick={handleHostedBack} disabled={hostedEvents.length <= 1}><img src={backArrow} alt="Back" style={{ width: '40px', height: '40px' }}/></button>
+          {hostedEvents.length > 0 ? (
+            <PastEventCard key={hostedEvents[hostedIndex].id} event={hostedEvents[hostedIndex]} />
+          ) : (
+            <span>No hosted events found.</span>
+          )}
+          <button onClick={handleHostedForward} disabled={hostedEvents.length <= 1}><img src={forwardArrow} alt="Next" style={{ width: '40px', height: '40px' }}/></button>
         </div>
         <h1 className="text-5xl font-oswald">Events I Have Attended</h1>
           <div className="carousel">
-          <button><img src={backArrow} alt="Back" style={{ width: '40px', height: '40px' }}/></button>
-          {attendedEvents.map((event) => (
-            <PastEventCard key={event.id} event={event} />
-          ))}
-          <button><img src={forwardArrow} alt="Next" style={{ width: '40px', height: '40px' }}/></button>
+          <button onClick={handleAttendedBack} disabled={attendedEvents.length <= 1}><img src={backArrow} alt="Back" style={{ width: '40px', height: '40px' }}/></button>
+          {attendedEvents.length > 0 ? (
+            <PastEventCard key={attendedEvents[attendedIndex].id} event={attendedEvents[attendedIndex]} />
+          ) : (
+            <span>No attended events found.</span>
+          )}
+          <button onClick={handleAttendedForward} disabled={attendedEvents.length <= 1}><img src={forwardArrow} alt="Next" style={{ width: '40px', height: '40px' }}/></button>
         </div>
-          <button><img src={thumbsUpIcon} alt="Thumbs Up" style={{ width: '40px', height: '40px' }}/></button>
+          <button onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={() => setIsLiked(!isLiked)}><img src={(isLiked || hovered) ? blackThumbsUpIcon : thumbsUpIcon} alt="Thumbs Up" style={{ width: '40px', height: '40px' }}/></button>
       </div>
     </>
   );

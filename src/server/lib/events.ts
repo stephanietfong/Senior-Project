@@ -85,12 +85,14 @@ export const getPastEvents = async (userId: string) => {
       )
     `,
     )
-    .eq("user_id", userId)
-    .lt("event.end_time", new Date().toISOString())
-    .order("event.end_time", { ascending: false });
+    .eq("user_id", userId);
 
   if (error) throw error;
-  return data?.map((rsvp: any) => rsvp.event) || [];
+  // Filter for past events and sort in JS
+  const now = new Date();
+  const events = (data?.map((rsvp: any) => rsvp.event) || []).filter((e: any) => e.end_time && new Date(e.end_time) < now);
+  events.sort((a: any, b: any) => new Date(b.end_time).getTime() - new Date(a.end_time).getTime());
+  return events;
 };
 
 // CREATE EVENT
