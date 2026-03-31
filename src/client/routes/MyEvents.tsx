@@ -5,8 +5,7 @@ import blackThumbsUpIcon from '@assets/black-thumbs-up.png';
 import forwardArrow from '@assets/forwardarrow.png';
 import backArrow from '@assets/backarrow.png';
 import { getCurrentUser } from "@lib/users";
-import { getHostedEvents } from "@lib/events";
-import { getPastEvents } from '@lib/events';
+import { getHostedEvents, getPastEvents, likeEvent, unlikeEvent, hasLikedEvent } from "@lib/events";
 
 
 function daysAgoText(endTimeIso: string) {
@@ -24,7 +23,7 @@ export const MyEventsPage = () => {
   const [attendedEvents, setAttendedEvents] = useState<PastEvent[]>([]);
   const [hostedIndex, setHostedIndex] = useState(0);
   const [attendedIndex, setAttendedIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
+  const [authUser, setAuthUser] = useState<any>(null);
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
@@ -39,6 +38,8 @@ export const MyEventsPage = () => {
           return;
         }
 
+        setAuthUser(authUser);
+
         const hosted = await getHostedEvents(authUser.id);
         const attended = await getPastEvents(authUser.id);
         const now = new Date();
@@ -46,33 +47,37 @@ export const MyEventsPage = () => {
           (e: any) => e?.end_time && new Date(e.end_time) < now,
         );
 
+        const likedStatuses = await Promise.all(attended.map((e: any) => hasLikedEvent(authUser.id, e.event_id)));
+
         const mappedHosted: PastEvent[] = hostedPast.map(
           (e: any) => ({
             id: e.event_id,
             title: e.title,
             description: e.summary || "—",
             daysAgoText: daysAgoText(e.end_time),
-            likedText: ``,
+            likedText: e.likes ? `${e.likes} Likes` : "0 Likes",
             tags:
               (e.event_tags || [])
                 .map((et: any) => et?.tags?.tag_name)
                 .filter(Boolean) || [],
             imageSrc: e.image_url || "",
+            liked: false,
           }),
         );
 
         const mappedAttended: PastEvent[] = (attended || []).map(
-          (e: any) => ({
+          (e: any, index: number) => ({
             id: e.event_id,
             title: e.title,
             description: e.summary || "—",
             daysAgoText: daysAgoText(e.end_time),
-            likedText: ``,
+            likedText: e.likes ? `${e.likes} Likes` : "0 Likes",
             tags:
               (e.event_tags || [])
                 .map((et: any) => et?.tags?.tag_name)
                 .filter(Boolean) || [],
             imageSrc: e.image_url || "",
+            liked: likedStatuses[index],
           }),
         );
 
@@ -101,6 +106,25 @@ export const MyEventsPage = () => {
   };
   const handleAttendedForward = () => {
     setAttendedIndex((prev) => (attendedEvents.length === 0 ? 0 : (prev + 1) % attendedEvents.length));
+  };
+
+  const handleLike = async () => {
+    if (!authUser || attendedEvents.length === 0) return;
+    const currentEvent = attendedEvents[attendedIndex];
+    const newLiked = !currentEvent.liked;
+    // Optimistically update UI
+    setAttendedEvents(prev => prev.map((e, i) => i === attendedIndex ? { ...e, liked: newLiked, likedText: newLiked ? `${parseInt(e.likedText.split(' ')[0]) + 1} Likes` : `${Math.max(0, parseInt(e.likedText.split(' ')[0]) - 1)} Likes` } : e));
+    try {
+      if (newLiked) {
+        await likeEvent(authUser.id, currentEvent.id);
+      } else {
+        await unlikeEvent(authUser.id, currentEvent.id);
+      }
+    } catch (error) {
+      // Revert on error
+      setAttendedEvents(prev => prev.map((e, i) => i === attendedIndex ? { ...e, liked: !newLiked, likedText: !newLiked ? `${parseInt(e.likedText.split(' ')[0]) + 1} Likes` : `${Math.max(0, parseInt(e.likedText.split(' ')[0]) - 1)} Likes` } : e));
+      console.error('Failed to toggle like:', error);
+    }
   };
 
   return (
@@ -136,7 +160,7 @@ export const MyEventsPage = () => {
           )}
           <button onClick={handleAttendedForward} disabled={attendedEvents.length <= 1}><img src={forwardArrow} alt="Next" style={{ width: '40px', height: '40px' }}/></button>
         </div>
-          <button onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={() => setIsLiked(!isLiked)}><img src={(isLiked || hovered) ? blackThumbsUpIcon : thumbsUpIcon} alt="Thumbs Up" style={{ width: '40px', height: '40px' }}/></button>
+          <button onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={handleLike}><img src={(attendedEvents[attendedIndex]?.liked || hovered) ? blackThumbsUpIcon : thumbsUpIcon} alt="Thumbs Up" style={{ width: '40px', height: '40px' }}/></button>
       </div>
     </>
   );

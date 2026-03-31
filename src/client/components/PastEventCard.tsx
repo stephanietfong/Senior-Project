@@ -1,18 +1,19 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export type PastEvent = {
-  id: number | string;
+  id: string;
   title: string;
   description: string;
   daysAgoText: string;
   likedText: string;
   tags: string[];
+  liked: boolean;
   imageSrc: string;
 };
 
 type Props = {
   event: PastEvent;
-  onDetails?: (id: PastEvent["id"]) => void;
 };
 
 const TagPill: React.FC<{ tag: string }> = ({ tag }) => {
@@ -43,7 +44,9 @@ const ImageBox: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
   );
 };
 
-export const PastEventCard: React.FC<Props> = ({ event, onDetails }) => {
+export const PastEventCard: React.FC<Props> = ({ event }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="w-[900px] grid grid-cols-[160px,1fr,180px] gap-6 p-5 bg-white text-black font-redhat rounded-2xl border border-black/10 shadow-sm">
       {/* Image */}
@@ -77,7 +80,7 @@ export const PastEventCard: React.FC<Props> = ({ event, onDetails }) => {
 
         <button
           type="button"
-          onClick={() => onDetails?.(event.id)}
+          onClick={() => navigate(`/events/${event.id}`)}
           className="rounded-full px-5 py-2 bg-customGreen font-semibold hover:opacity-90"
         >
           Details

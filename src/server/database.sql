@@ -23,6 +23,7 @@ CREATE TABLE events (
   is_21_plus BOOLEAN DEFAULT FALSE,
   start_time TIMESTAMP NOT NULL,
   end_time TIMESTAMP NOT NULL,
+  likes integer,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -42,6 +43,15 @@ CREATE TABLE rsvps (
   status VARCHAR(50) NOT NULL CHECK (status IN ('Maybe', 'Going')),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, event_id)
+);
+
+-- Event Likes Table (which user likes which event)
+CREATE TABLE event_likes (
+  like_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  event_id UUID NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(user_id, event_id)
 );
 

@@ -158,3 +158,97 @@ export const addTagToEvent = async (eventId: string, tagId: string) => {
   if (error) throw error;
   return data;
 };
+
+// INCREMENT LIKES FOR AN EVENT
+export const incrementLikes = async (eventId: string) => {
+  // get current likes
+  const { data: current, error: fetchError } = await supabase
+    .from("events")
+    .select("likes")
+    .eq("event_id", eventId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  // update with incremented value
+  const { data, error } = await supabase
+    .from("events")
+    .update({ likes: (current.likes || 0) + 1 })
+    .eq("event_id", eventId)
+    .select();
+
+  if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error("Failed to update likes: no rows affected");
+  }
+  return data;
+};
+
+// DECREMENT LIKES FOR AN EVENT
+export const decrementLikes = async (eventId: string) => {
+  // gets current likes
+  const { data: current, error: fetchError } = await supabase
+    .from("events")
+    .select("likes")
+    .eq("event_id", eventId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  // updates with decremented value
+  const { data, error } = await supabase
+    .from("events")
+    .update({ likes: Math.max(0, (current.likes || 0) - 1) })
+    .eq("event_id", eventId)
+    .select();
+
+  if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error("Failed to update likes: no rows affected");
+  }
+  return data;
+};
+
+// LIKE AN EVENT
+export const likeEvent = async (userId: string, eventId: string) => {
+  // insert like
+  const { data, error } = await supabase
+    .from("event_likes")
+    .insert({ user_id: userId, event_id: eventId })
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  // increment likes
+  await incrementLikes(eventId);
+  return data;
+};
+
+// UNLIKE AN EVENT
+export const unlikeEvent = async (userId: string, eventId: string) => {
+  // delete like
+  const { error } = await supabase
+    .from("event_likes")
+    .delete()
+    .eq("user_id", userId)
+    .eq("event_id", eventId);
+
+  if (error) throw error;
+
+  // decrement likes
+  await decrementLikes(eventId);
+};
+
+// CHECK IF USER HAS LIKED AN EVENT
+export const hasLikedEvent = async (userId: string, eventId: string) => {
+  const { data, error } = await supabase
+    .from("event_likes")
+    .select("like_id")
+    .eq("user_id", userId)
+    .eq("event_id", eventId)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error; // PGRST116 is no rows
+  return !!data;
+};
