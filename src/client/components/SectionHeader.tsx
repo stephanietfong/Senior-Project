@@ -1,13 +1,20 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UserIcon from "@client/assets/user.png";
-import { Settings } from "./Settings";
+import { logout } from "@lib/users";
 
 export function SectionHeader() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleNavigate = () => {
     setIsOpen(false);
+  };
+
+  const handleLogout = async () => {
+    setIsOpen(false);
+    await logout();
+    navigate("/");
   };
 
   return (
@@ -32,7 +39,7 @@ export function SectionHeader() {
           </button>
 
           {isOpen && (
-            <div className="absolute right-0 top-full mt-2 w-44 border border-black/10 bg-[#e8f0e8] py-2 shadow-sm">
+            <div className="absolute right-0 top-full z-50 mt-2 w-44 border border-black/10 bg-[#e8f0e8] py-2 shadow-sm">
               <Link
                 to="/profile"
                 onClick={handleNavigate}
@@ -61,9 +68,20 @@ export function SectionHeader() {
               >
                 Create Event
               </Link>
-              <div className="block px-4 py-2 text-black">
-                <Settings />
-              </div>
+              <Link
+                to="/settings"
+                onClick={handleNavigate}
+                className="block px-4 py-2 text-black hover:opacity-80"
+              >
+                Settings
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="block w-full px-4 py-2 text-left text-black hover:opacity-80"
+              >
+                Sign Out
+              </button>
             </div>
           )}
         </div>
