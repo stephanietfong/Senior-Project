@@ -14,6 +14,8 @@ export const EventsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchTags, setSearchTags] = useState<string[]>([]);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const EVENTS_PER_PAGE = 15;
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -58,7 +60,6 @@ export const EventsPage = () => {
   }, []);
 
   function handleSearch(): void {
-    // Search by event title or summary, and filter by selected tags
     const newEvents = events.filter(
       (e) =>
         (e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -70,21 +71,21 @@ export const EventsPage = () => {
     );
 
     setDisplayedEvents(newEvents);
+    setCurrentPage(1);
   }
 
   function clearSearch(): void {
     setSearchTerm("");
     setSearchTags([]);
     setDisplayedEvents(events);
+    setCurrentPage(1);
   }
 
-  function toggleSearchTag(tagName: string): void {
-    setSearchTags((prev) =>
-      prev.includes(tagName)
-        ? prev.filter((tag) => tag !== tagName)
-        : [...prev, tagName],
-    );
-  }
+  const totalPages = Math.ceil(displayedEvents.length / EVENTS_PER_PAGE);
+  const paginatedEvents = displayedEvents.slice(
+    (currentPage - 1) * EVENTS_PER_PAGE,
+    currentPage * EVENTS_PER_PAGE,
+  );
 
   if (loading) {
     return <p>Loading ...</p>;
@@ -139,7 +140,7 @@ export const EventsPage = () => {
       )}
 
       <div className="flex flex-col gap-10">
-        {displayedEvents.map((e) => (
+        {paginatedEvents.map((e) => (
           <EventCard
             key={e.event_id}
             id={e.event_id}
@@ -152,6 +153,42 @@ export const EventsPage = () => {
           />
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-10 flex justify-center items-center gap-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            disabled={currentPage === 1}
+          >
+            &larr;
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-4 py-2 rounded ${
+                page === currentPage
+                  ? "bg-customGreen text-white"
+                  : "bg-gray-200"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            disabled={currentPage === totalPages}
+          >
+            &rarr;
+          </button>
+        </div>
+      )}
     </div>
   );
 };

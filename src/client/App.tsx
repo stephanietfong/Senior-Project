@@ -16,6 +16,7 @@ import { SectionHeaderLayout } from "./components/SectionHeaderLayout";
 import { SettingsPage } from "./routes/Settings";
 import { MyEventsPage } from "./routes/MyEvents";
 import { InterestsPage } from "./routes/Interests";
+import { ProfilePage } from "./routes/Profile";
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
               <Route path="/upcoming" element={<UpcomingEventsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/my-events" element={<MyEventsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
             <Route path="/coordinator" element={<CoordinatorViewPage />} />
             <Route path="/login" element={<LoginPage />} />

@@ -17,11 +17,24 @@ interface EventCardProps {
 
 function calculateDate(date: Date) {
   const today = new Date();
-  const diff = Math.floor(
-    (new Date(date).getTime() - today.getTime()) / (24 * 3600 * 1000),
+  const event = new Date(date);
+
+  const todayMidnight = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+  const targetMidnight = new Date(
+    event.getFullYear(),
+    event.getMonth(),
+    event.getDate(),
   );
 
-  if (today.getDate() === new Date(date).getDate()) {
+  const diff = Math.floor(
+    (targetMidnight.getTime() - todayMidnight.getTime()) / (24 * 3600 * 1000),
+  );
+
+  if (diff == 0) {
     return "In 0 days";
   }
   return `In ${diff} days`;
@@ -41,7 +54,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   tags,
 }) => {
   return (
-    <div className="grid grid-cols-[1fr,3fr,0.5fr] gap-4 p-4 bg-customGray text-black font-redhat rounded-md">
+    <div className="grid grid-cols-[1fr,3fr,0.5fr] gap-4 p-4 bg-customGray text-black font-redhat rounded-md relative">
       <div className="w-full h-full flex items-center justify-center">
         <img
           src={image}

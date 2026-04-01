@@ -34,6 +34,13 @@ export function SectionHeader() {
           {isOpen && (
             <div className="absolute right-0 top-full mt-2 w-44 border border-black/10 bg-[#e8f0e8] py-2 shadow-sm">
               <Link
+                to="/profile"
+                onClick={handleNavigate}
+                className="block px-4 py-2 text-black hover:opacity-80"
+              >
+                Profile
+              </Link>
+              <Link
                 to="/my-events"
                 onClick={handleNavigate}
                 className="block px-4 py-2 text-black hover:opacity-80"

@@ -79,3 +79,28 @@ CREATE INDEX idx_rsvps_user_id ON rsvps(user_id);
 CREATE INDEX idx_rsvps_event_id ON rsvps(event_id);
 CREATE INDEX idx_user_interests_user_id ON user_interests(user_id);
 CREATE INDEX idx_event_tags_event_id ON event_tags(event_id);
+
+-- Row Level Security for user interests
+ALTER TABLE user_interests ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS user_interests_select_own ON user_interests;
+DROP POLICY IF EXISTS user_interests_insert_own ON user_interests;
+DROP POLICY IF EXISTS user_interests_delete_own ON user_interests;
+
+CREATE POLICY user_interests_select_own
+ON user_interests
+FOR SELECT
+TO authenticated
+USING (user_id = auth.uid());
+
+CREATE POLICY user_interests_insert_own
+ON user_interests
+FOR INSERT
+TO authenticated
+WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY user_interests_delete_own
+ON user_interests
+FOR DELETE
+TO authenticated
+USING (user_id = auth.uid());
