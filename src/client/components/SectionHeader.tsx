@@ -54,6 +54,13 @@ export function SectionHeader() {
               >
                 Interested Events
               </Link>
+              <Link
+                to="/create-event"
+                onClick={handleNavigate}
+                className="block px-4 py-2 text-black hover:opacity-80"
+              >
+                Create Event
+              </Link>
               <div className="block px-4 py-2 text-black">
                 <Settings />
               </div>

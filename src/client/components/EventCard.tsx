@@ -54,7 +54,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   tags,
 }) => {
   return (
-    <div className="grid grid-cols-[1fr,3fr,0.5fr] gap-4 p-4 bg-customGray text-black font-redhat rounded-md relative">
+    <div className="grid grid-cols-[1fr,3fr,0.5fr] gap-4 p-4 bg-customGray text-black font-redhat rounded-md">
       <div className="w-full h-full flex items-center justify-center">
         <img
           src={image}

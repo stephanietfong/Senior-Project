@@ -128,11 +128,17 @@ export const EventDetails = () => {
         {event.title}
       </h1>
       <div className="flex flex-row h-[36rem] gap-10 items-center justify-center">
-        <img
-          src={event.image_url}
-          alt={`Event: ${event.title}`}
-          className="w-[36rem] shadow-lg"
-        />
+        {event.image_url ? (
+          <img
+            src={event.image_url}
+            alt={`Event: ${event.title}`}
+            className="w-[36rem] shadow-lg"
+          />
+        ) : (
+          <div className="w-[36rem] h-[36rem] bg-gray-200 flex items-center justify-center shadow-lg">
+            <p className="text-gray-500">No image available</p>
+          </div>
+        )}
         <div className="flex flex-col p-10 gap-6 h-full">
           <ul className="gap-2 flex flex-col">
             <li className="flex items-center gap-2">
