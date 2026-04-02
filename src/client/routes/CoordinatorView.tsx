@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { PastEventCard, PastEvent } from "@components/PastEventCard";
-import { getCurrentUser, getUserById } from "@lib/users";
+import { getUserById } from "@lib/users";
 import { getHostedEvents } from "@lib/events";
-import { getRSVPCountForEvent } from "@lib/rsvps";
 
 function formatDateShort(iso: string) {
   const d = new Date(iso);
@@ -31,47 +30,49 @@ function daysUntilText(startTimeIso: string) {
   return `In ${diff} days`;
 }
 
-function mapEvent(e: any, timeText: string, count: number): PastEvent {
+function mapEvent(e: any, timeText: string): PastEvent {
   return {
     id: e.event_id,
     title: e.title,
     description: e.summary || "—",
     daysAgoText: timeText,
-    likedText: `${count} RSVP${count !== 1 ? "s" : ""}`,
+    likedText: `${e.likes || 0} Like${(e.likes || 0) !== 1 ? "s" : ""}`,
     tags: (e.event_tags || []).map((et: any) => et?.tags?.tag_name).filter(Boolean),
     imageSrc: e.image_url || "",
+    liked: false,
   };
 }
 
 export const CoordinatorViewPage = () => {
+  const { hostId } = useParams<{ hostId: string }>();
   const navigate = useNavigate();
-  const [orgName, setOrgName] = useState("Coordinator");
+  const [orgName, setOrgName] = useState("Host");
   const [hostingSince, setHostingSince] = useState("—");
   const [upcomingEvents, setUpcomingEvents] = useState<PastEvent[]>([]);
   const [pastEvents, setPastEvents] = useState<PastEvent[]>([]);
-  const [totalRSVPs, setTotalRSVPs] = useState(0);
+  const [totalLikes, setTotalLikes] = useState(0);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!hostId) {
+      setErrorMsg("No host specified.");
+      setLoading(false);
+      return;
+    }
+
     const run = async () => {
       try {
         setLoading(true);
         setErrorMsg(null);
 
-        const authUser = await getCurrentUser();
-        if (!authUser) {
-          setErrorMsg("You must be logged in to view the coordinator page.");
-          return;
-        }
-
-        const profile = await getUserById(authUser.id);
-        setOrgName(profile?.display_name || "Coordinator");
+        const profile = await getUserById(hostId);
+        setOrgName(profile?.display_name || "Host");
         setHostingSince(
           profile?.created_at ? formatDateShort(profile.created_at) : "—",
         );
 
-        const hosted = await getHostedEvents(authUser.id);
+        const hosted = await getHostedEvents(hostId);
         const now = new Date();
 
         const upcoming = (hosted || []).filter(
@@ -81,56 +82,35 @@ export const CoordinatorViewPage = () => {
           (e: any) => e?.end_time && new Date(e.end_time) < now,
         );
 
-        const withCounts = await Promise.all(
-          [...upcoming, ...past].map(async (e: any) => {
-            const count = await getRSVPCountForEvent(e.event_id);
-            return { e, count };
-          }),
+        const likesTotal = (hosted || []).reduce(
+          (sum: number, e: any) => sum + (e.likes || 0),
+          0,
         );
 
-        const upcomingIds = new Set(upcoming.map((e: any) => e.event_id));
-        let rsvpTotal = 0;
-
-        const mappedUpcoming: PastEvent[] = [];
-        const mappedPast: PastEvent[] = [];
-
-        for (const { e, count } of withCounts) {
-          rsvpTotal += count;
-          if (upcomingIds.has(e.event_id)) {
-            mappedUpcoming.push(mapEvent(e, daysUntilText(e.start_time), count));
-          } else {
-            mappedPast.push(mapEvent(e, daysAgoText(e.end_time), count));
-          }
-        }
-
-        setUpcomingEvents(mappedUpcoming);
-        setPastEvents(mappedPast);
-        setTotalRSVPs(rsvpTotal);
+        setUpcomingEvents(upcoming.map((e: any) => mapEvent(e, daysUntilText(e.start_time))));
+        setPastEvents(past.map((e: any) => mapEvent(e, daysAgoText(e.end_time))));
+        setTotalLikes(likesTotal);
       } catch (err: any) {
-        setErrorMsg(err?.message || "Failed to load coordinator view.");
+        setErrorMsg(err?.message || "Failed to load host profile.");
       } finally {
         setLoading(false);
       }
     };
 
     run();
-  }, []);
+  }, [hostId]);
 
   const totalEvents = upcomingEvents.length + pastEvents.length;
 
   return (
     <div className="py-4 px-20 text-black">
-      <div className="my-10 flex items-center justify-between">
+      <div className="my-10">
         <button
           type="button"
           onClick={() => navigate(-1)}
           className="bg-customDarkBlue py-2 px-4 font-semibold hover:opacity-90"
         >
           ← Back
-        </button>
-
-        <button className="bg-customGreen py-2 font-semibold px-4 hover:opacity-90">
-          Create Event +
         </button>
       </div>
 
@@ -147,7 +127,7 @@ export const CoordinatorViewPage = () => {
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-5">
                 <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-customBlue bg-black/5 text-3xl font-semibold shrink-0">
-                  {orgName?.[0]?.toUpperCase() || "C"}
+                  {orgName?.[0]?.toUpperCase() || "H"}
                 </div>
                 <div>
                   <p className="font-oswald text-4xl leading-tight">{orgName}</p>
@@ -165,9 +145,9 @@ export const CoordinatorViewPage = () => {
                   </p>
                 </div>
                 <div className="rounded-2xl bg-customGreen/30 px-6 py-4 text-center">
-                  <p className="font-oswald text-4xl">{totalRSVPs}</p>
+                  <p className="font-oswald text-4xl">{totalLikes}</p>
                   <p className="mt-1 text-xs uppercase tracking-widest text-black/50">
-                    Total RSVPs
+                    Total Likes
                   </p>
                 </div>
                 <div className="rounded-2xl bg-customBrown/20 px-6 py-4 text-center">
@@ -185,14 +165,10 @@ export const CoordinatorViewPage = () => {
             <p className="font-oswald text-3xl">Upcoming Events</p>
             <div className="mt-6 flex flex-col gap-6">
               {upcomingEvents.map((e) => (
-                <PastEventCard
-                  key={e.id}
-                  event={e}
-                  onDetails={(id) => navigate(`/events/${id}`)}
-                />
+                <PastEventCard key={e.id} event={e} />
               ))}
               {upcomingEvents.length === 0 && (
-                <p className="text-sm text-black/60">No upcoming hosted events.</p>
+                <p className="text-sm text-black/60">No upcoming events.</p>
               )}
             </div>
           </div>
@@ -202,14 +178,10 @@ export const CoordinatorViewPage = () => {
             <p className="font-oswald text-3xl">Past Events</p>
             <div className="mt-6 flex flex-col gap-6">
               {pastEvents.map((e) => (
-                <PastEventCard
-                  key={e.id}
-                  event={e}
-                  onDetails={(id) => navigate(`/events/${id}`)}
-                />
+                <PastEventCard key={e.id} event={e} />
               ))}
               {pastEvents.length === 0 && (
-                <p className="text-sm text-black/60">No past hosted events.</p>
+                <p className="text-sm text-black/60">No past events.</p>
               )}
             </div>
           </div>
