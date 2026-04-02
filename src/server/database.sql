@@ -63,6 +63,23 @@ CREATE TABLE event_tags (
   UNIQUE(event_id, tag_id)
 );
 
+-- Contact Submissions Table
+CREATE TABLE contact_submissions (
+  submission_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  issue_name VARCHAR(255) NOT NULL,
+  issue_description TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can insert submissions"
+ON contact_submissions FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
 -- Create indexes for better query performance
 CREATE INDEX idx_events_host_id ON events(host_id);
 CREATE INDEX idx_rsvps_user_id ON rsvps(user_id);
