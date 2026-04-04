@@ -6,14 +6,16 @@ import forwardArrow from '@assets/forwardarrow.png';
 import backArrow from '@assets/backarrow.png';
 import { getCurrentUser } from "@lib/users";
 import { getHostedEvents, getPastEvents, likeEvent, unlikeEvent, hasLikedEvent } from "@lib/events";
+import { getRSVPCountForEvent, getRSVPsForEvent } from '@/server/lib/rsvps';
 
 
 function daysAgoText(endTimeIso: string) {
   const now = new Date();
   const end = new Date(endTimeIso);
   const diff = Math.floor((now.getTime() - end.getTime()) / (24 * 3600 * 1000));
-  if (diff <= 0) return "1 Day Ago";
+  if (diff === 0) return "1 Day Ago";
   if (diff === 1) return "1 day ago";
+  if (diff < 0) return `In ${diff * -1} days`;
   return `${diff} days ago`;
 }
 
@@ -43,27 +45,39 @@ export const MyEventsPage = () => {
         const hosted = await getHostedEvents(authUser.id);
         const attended = await getPastEvents(authUser.id);
         const now = new Date();
-        const hostedPast = (hosted || []).filter(
-          (e: any) => e?.end_time && new Date(e.end_time) < now,
-        );
 
         const likedStatuses = await Promise.all(attended.map((e: any) => hasLikedEvent(authUser.id, e.event_id)));
 
-        const mappedHosted: PastEvent[] = hostedPast.map(
-          (e: any) => ({
+        const mappedHosted: PastEvent[] = await Promise.all(
+        hosted.map(async (e: any) => {
+          const daysAgo = daysAgoText(e.end_time);
+
+          let likedText;
+
+          if (daysAgo.startsWith("I")) {
+            // Event is upcoming → show RSVPs
+            const rsvpCount = await getRSVPCountForEvent(e.event_id);
+            likedText = `${rsvpCount} rsvps`;
+          } else {
+            // Event is past → show likes
+            likedText = `${e.likes ?? 0} Likes`;
+          }
+
+          return {
             id: e.event_id,
             title: e.title,
             description: e.summary || "—",
-            daysAgoText: daysAgoText(e.end_time),
-            likedText: e.likes ? `${e.likes} Likes` : "0 Likes",
+            daysAgoText: daysAgo,
+            likedText,
             tags:
               (e.event_tags || [])
                 .map((et: any) => et?.tags?.tag_name)
                 .filter(Boolean) || [],
             imageSrc: e.image_url || "",
             liked: false,
-          }),
-        );
+          };
+        })
+      );
 
         const mappedAttended: PastEvent[] = (attended || []).map(
           (e: any, index: number) => ({
