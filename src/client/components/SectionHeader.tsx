@@ -69,13 +69,6 @@ export function SectionHeader() {
                 Create Event
               </Link>
               <Link
-                to="/coordinator"
-                onClick={handleNavigate}
-                className="block px-4 py-2 text-black hover:opacity-80"
-              >
-                Coordinator View
-              </Link>
-              <Link
                 to="/settings"
                 onClick={handleNavigate}
                 className="block px-4 py-2 text-black hover:opacity-80"

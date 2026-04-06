@@ -150,6 +150,8 @@ export const EventsPage = () => {
             date={e.start_time}
             description={e.summary}
             tags={e.event_tags}
+            hostId={e.host?.user_id}
+            hostName={e.host?.display_name}
           />
         ))}
       </div>

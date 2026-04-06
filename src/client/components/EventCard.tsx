@@ -13,6 +13,8 @@ interface EventCardProps {
   date: Date;
   description: string;
   tags?: { tags: Tag }[];
+  hostId?: string;
+  hostName?: string;
 }
 
 function calculateDate(date: Date) {
@@ -52,6 +54,8 @@ export const EventCard: React.FC<EventCardProps> = ({
   date,
   description,
   tags,
+  hostId,
+  hostName,
 }) => {
   return (
     <div className="grid grid-cols-[1fr,3fr,0.5fr] gap-4 p-4 bg-customGray text-black font-redhat rounded-md">
@@ -73,6 +77,11 @@ export const EventCard: React.FC<EventCardProps> = ({
         <div className="flex flex-col gap-2">
           <p className="font-oswald text-3xl">{name}</p>
           <p className="italic">{location}</p>
+        {hostId && hostName && (
+          <Link to={`/coordinator/${hostId}`} className="text-sm text-black/50 hover:underline">
+            Hosted by {hostName}
+          </Link>
+        )}
         </div>
         <p className="word-wrap text-sm">{description}</p>
         <div className="flex flex-wrap gap-2">
