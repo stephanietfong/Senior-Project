@@ -10,6 +10,7 @@ import {
   deleteRSVP,
   checkRSVPForSingleUserAndEvent,
 } from "@/server/lib/rsvps";
+import { submitReport } from "@/server/lib/reports";
 
 const formatEventTimestamp = (timestamp?: string) => {
   if (!timestamp) return null;
@@ -38,6 +39,11 @@ export const EventDetails = () => {
   const [event, setEvent] = useState<any>({});
   const [user, setUser] = useState<any>(null);
   const [interested, setInterested] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reportDone, setReportDone] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
 
   const mapQuery = event.address || event.location_name || "";
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as
@@ -97,6 +103,21 @@ export const EventDetails = () => {
       }
     } catch (error) {
       console.error("Error creating RSVP:", error);
+    }
+  };
+
+  const handleReport = async () => {
+    if (!reportReason) return;
+    setReportSubmitting(true);
+    setReportError(null);
+    try {
+      await submitReport(user?.id, id!.toString(), reportReason);
+      setReportDone(true);
+      setReportOpen(false);
+    } catch (e: any) {
+      setReportError(e.message?.includes("unique") ? "You have already reported this event." : (e.message || "Failed to submit report."));
+    } finally {
+      setReportSubmitting(false);
     }
   };
 
@@ -186,22 +207,73 @@ export const EventDetails = () => {
         )}
       </div>
 
-      {interested ? (
-        <button
-          className="bg-customGreen text-white p-4 rounded font-semibold min-w-24"
-          onClick={() => handleRemoveInterest()}
-        >
-          You've marked your interest in this event. Click to unmark your
-          interest.
-        </button>
-      ) : (
-        <button
-          className="bg-customDarkBlue text-white p-4 rounded font-semibold min-w-24"
-          onClick={() => handleAddInterest()}
-        >
-          Mark this event as Interested!
-        </button>
+      {/* Report Modal */}
+      {reportOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-customBeige rounded-2xl border border-black/10 shadow-lg p-8 w-full max-w-md flex flex-col gap-4">
+            <h2 className="font-oswald text-2xl">Report Event</h2>
+            <p className="font-redhat text-sm text-black/60">Select a reason for reporting this event.</p>
+            <select
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              className="w-full rounded-xl border border-black/15 bg-white px-4 py-3 font-redhat text-base outline-none"
+            >
+              <option value="">Select a reason...</option>
+              <option value="Inappropriate content">Inappropriate content</option>
+              <option value="Spam">Spam</option>
+              <option value="Offensive image">Offensive image</option>
+              <option value="Misleading information">Misleading information</option>
+              <option value="Other">Other</option>
+            </select>
+            {reportError && <p className="text-sm text-red-600">{reportError}</p>}
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => { setReportOpen(false); setReportReason(""); setReportError(null); }}
+                className="px-5 py-2 rounded-full border border-black/15 font-semibold hover:opacity-80"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReport}
+                disabled={!reportReason || reportSubmitting}
+                className="px-5 py-2 rounded-full bg-customBrown text-white font-semibold hover:opacity-90 disabled:opacity-50"
+              >
+                {reportSubmitting ? "Submitting..." : "Submit Report"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
+
+      {reportDone && (
+        <p className="text-sm text-green-600 font-redhat">Thank you — your report has been submitted.</p>
+      )}
+
+      <div className="flex flex-col items-center gap-3">
+        {interested ? (
+          <button
+            className="bg-customGreen text-white p-4 rounded font-semibold min-w-24"
+            onClick={() => handleRemoveInterest()}
+          >
+            You've marked your interest in this event. Click to unmark your interest.
+          </button>
+        ) : (
+          <button
+            className="bg-customDarkBlue text-white p-4 rounded font-semibold min-w-24"
+            onClick={() => handleAddInterest()}
+          >
+            Mark this event as Interested!
+          </button>
+        )}
+        {user && !reportDone && (
+          <button
+            onClick={() => setReportOpen(true)}
+            className="text-sm text-black/40 hover:text-customBrown underline"
+          >
+            Report this event
+          </button>
+        )}
+      </div>
     </div>
   );
 };
