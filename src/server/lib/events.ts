@@ -95,6 +95,11 @@ export const getPastEvents = async (userId: string) => {
   return events;
 };
 
+function sanitizeText(str: string | undefined) {
+  if (!str) return str;
+  return str.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
+}
+
 // CREATE EVENT
 export const createEvent = async (eventData: {
   host_id: string;
@@ -111,7 +116,13 @@ export const createEvent = async (eventData: {
 }) => {
   const { data, error } = await supabase
     .from("events")
-    .insert(eventData)
+    .insert({
+      ...eventData,
+      title: sanitizeText(eventData.title),
+      summary: sanitizeText(eventData.summary),
+      location_name: sanitizeText(eventData.location_name),
+      address: sanitizeText(eventData.address),
+    })
     .select()
     .single();
 

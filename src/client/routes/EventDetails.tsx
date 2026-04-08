@@ -165,7 +165,7 @@ export const EventDetails = () => {
               </p>
             </li>
           </ul>
-          <p className="bg-customGray p-8 max-w-4xl">{event.summary}</p>
+          <p className="bg-customGray p-8 max-w-4xl">{event.summary?.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"')}</p>
         </div>
       </div>
 
