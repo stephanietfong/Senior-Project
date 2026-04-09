@@ -6,6 +6,7 @@ export const signUp = async (
   password: string,
   displayName: string,
   dateOfBirth: string,
+  verificationCode: string,
 ) => {
   // Sign up with Supabase Auth
   const { data, error } = await supabase.auth.signUp({
@@ -21,6 +22,7 @@ export const signUp = async (
     email,
     display_name: displayName,
     date_of_birth: dateOfBirth,
+    verification_code: verificationCode,
   });
 
   if (insertError) throw insertError;
@@ -63,6 +65,42 @@ export const getUserById = async (userId: string) => {
     .select("*")
     .eq("user_id", userId)
     .single();
+
+  if (error) throw error;
+  return data;
+};
+
+// GET VERIFICATION CODE FOR USER
+export const getVCByEmail = async (userEmail: string) => {
+  const { data, error } = await supabase
+    .from("users")
+    .select("verification_code")
+    .eq("email", userEmail)
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+// UPDATE VERIFICATION CODE FOR USER
+export const updateVCByEmail = async (userEmail: string, newCode: string) => {
+  const { data, error } = await supabase
+    .from("users")
+    .update({ verification_code: newCode })
+    .eq("email", userEmail)
+    .select();
+
+  if (error) throw error;
+  return data;
+};
+
+// SET USER ACCOUNT AS VERIFIED
+export const verifyUser = async (userEmail: string) => {
+  const { data, error } = await supabase
+    .from("users")
+    .update({ verified: true })
+    .eq("email", userEmail)
+    .select();
 
   if (error) throw error;
   return data;

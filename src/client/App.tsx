@@ -6,8 +6,8 @@ import { EventsPage } from "./routes/Events";
 import { EventDetails } from "./routes/EventDetails";
 import { CoordinatorViewPage } from "./routes/CoordinatorView";
 import { LoginPage } from "./routes/login";
-import { SignUpPage } from "./routes/signup";
-// import { VerificationPage } from "./routes/verification";
+import { SignUpPage } from "./routes/Signup";
+import { VerificationPage } from "./routes/Verification";
 import { FAQPage } from "./routes/FAQ";
 import { CreateEventPage } from "./routes/CreateEvent";
 import { ContactUsPage } from "./routes/ContactUs";
@@ -34,11 +34,14 @@ const App = () => {
               <Route path="/my-events" element={<MyEventsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
-            <Route path="/coordinator/:hostId" element={<CoordinatorViewPage />} />
+            <Route
+              path="/coordinator/:hostId"
+              element={<CoordinatorViewPage />}
+            />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/interests" element={<InterestsPage />} />
-            {/* <Route path="/verification" element={<VerificationPage />} /> */}
+            <Route path="/verification" element={<VerificationPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/contact" element={<ContactUsPage />} />
           </Routes>
