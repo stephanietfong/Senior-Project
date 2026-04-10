@@ -31,6 +31,45 @@ const formatEventTimestamp = (timestamp?: string) => {
   return `${datePart} @ ${timePart}`;
 };
 
+const formatGoogleCalendarDate = (timestamp?: string) => {
+  if (!timestamp) return null;
+
+  const parsedDate = new Date(timestamp);
+  if (Number.isNaN(parsedDate.getTime())) return null;
+
+  // Google Calendar URL format requires UTC in YYYYMMDDTHHMMSSZ.
+  return parsedDate.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+};
+
+const buildGoogleCalendarUrl = (event: any, userEmail?: string) => {
+  const params = new URLSearchParams();
+
+  params.set("action", "TEMPLATE");
+  params.set("text", event.title || "Event");
+
+  const start = formatGoogleCalendarDate(event.start_time);
+  const end = formatGoogleCalendarDate(event.end_time);
+  if (start && end) {
+    params.set("dates", `${start}/${end}`);
+  }
+
+  const detailsParts = [event.summary, event.description].filter(Boolean);
+  if (detailsParts.length > 0) {
+    params.set("details", detailsParts.join("\n\n"));
+  }
+
+  const location = event.address || event.location_name;
+  if (location) {
+    params.set("location", location);
+  }
+
+  if (userEmail) {
+    params.set("authuser", userEmail);
+  }
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+};
+
 export const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -89,11 +128,14 @@ export const EventDetails = () => {
   const handleAddInterest = async () => {
     try {
       if (id) {
-        const data = await createOrUpdateRSVP(
+        await createOrUpdateRSVP(
           user.id.toString(),
           id.toString(),
         );
         setInterested(true);
+
+        const calendarUrl = buildGoogleCalendarUrl(event, user?.email);
+        window.open(calendarUrl, "_blank");
       }
     } catch (error) {
       console.error("Error creating RSVP:", error);
