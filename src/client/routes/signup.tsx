@@ -2,7 +2,7 @@ import { useState } from "react";
 import React from "react";
 import { SignUpBox } from "@components/SignUpBox";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@server/supabase";
+import { signUp } from "@/server/lib/users";
 
 export const SignUpPage = () => {
   const [name, setName] = useState("");
@@ -24,7 +24,7 @@ export const SignUpPage = () => {
     }
     if (!password) {
       return "Please enter a password.";
-    } 
+    }
     if (password !== confirmPassword) {
       return "Passwords do not match.";
     }
@@ -34,43 +34,38 @@ export const SignUpPage = () => {
     return null;
   };
 
-  const createProfile = async (userId: string) => {
-    const { error: insertError } = await supabase.from("users").insert({
-      user_id: userId,
-      email,
-      display_name: name,
-      date_of_birth: dob || null,
-    });
-    if (insertError) {
-      throw insertError;
-    } 
-  };
-
   const handleSignUp = async () => {
     setErrorMsg(null);
     const validationError = validateForm();
-    if (validationError){
+    if (validationError) {
       return setErrorMsg(validationError);
     }
 
     setLoading(true);
     try {
-      const redirectTo = `${window.location.origin}/events`;
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: redirectTo },
-      });
-      if (error) {
-        throw error;
-      }
+      const vc = Math.floor(100000 + Math.random() * 900000).toString();
+      await signUp(email, password, name, dob, vc);
 
-      const userId = data.user?.id;
-      if (userId) {
-        await createProfile(userId);
-      }
+      try {
+        const response = await fetch("http://localhost:5000/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            to: email,
+            subject: "Verify your Local Loop Account",
+            text: `Your verification code is ${vc}`,
+          }),
+        });
 
-      navigate("/interests");
+        const data = await response.json();
+        alert(data.message);
+        navigate("/verification", { state: { email } });
+      } catch (error) {
+        console.error(error);
+        alert("Error sending email");
+      }
     } catch (err: any) {
       setErrorMsg(err.message || String(err));
     } finally {
@@ -84,14 +79,14 @@ export const SignUpPage = () => {
   };
 
   const passwordRules = [
-  { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
-  { label: "One uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
-  { label: "One number", test: (p: string) => /[0-9]/.test(p) },
-  {
-    label: "One special character",
-    test: (p: string) => /[!@#$%^&*(),.?":{}|<>]/.test(p),
-  },
-];
+    { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
+    { label: "One uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+    { label: "One number", test: (p: string) => /[0-9]/.test(p) },
+    {
+      label: "One special character",
+      test: (p: string) => /[!@#$%^&*(),.?":{}|<>]/.test(p),
+    },
+  ];
 
   const passwordValid = passwordRules.every((rule) => rule.test(password));
 
@@ -168,7 +163,10 @@ export const SignUpPage = () => {
               <p className="font-semibold mb-2">Password must have:</p>
               <ul className="space-y-1 list-disc list-inside text-gray-700">
                 {passwordRules.map((rule) => (
-                <li key={rule.label} className={`flex items-center gap-2 ${rule.test(password) ? "text-green-600" : "text-gray-500"}`}>
+                  <li
+                    key={rule.label}
+                    className={`flex items-center gap-2 ${rule.test(password) ? "text-green-600" : "text-gray-500"}`}
+                  >
                     <span>{rule.test(password) ? "✓" : "✗"}</span>
                     {rule.label}
                   </li>
@@ -199,7 +197,9 @@ export const SignUpPage = () => {
               </button>
             </div>
             {confirmPassword !== "" && !passwordsMatch && (
-              <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
+              <p className="text-red-500 text-sm mt-1">
+                Passwords do not match
+              </p>
             )}
           </div>
           {/* Sign Up Button */}
@@ -212,7 +212,9 @@ export const SignUpPage = () => {
                 onClick={handleSignUp}
                 disabled={loading}
                 className={`px-10 py-2 rounded text-base font-medium transition-opacity w-full ${
-                  loading ? "bg-gray-400 text-gray-800 cursor-not-allowed" : "bg-customGreen text-black hover:opacity-90 cursor-pointer"
+                  loading
+                    ? "bg-gray-400 text-gray-800 cursor-not-allowed"
+                    : "bg-customGreen text-black hover:opacity-90 cursor-pointer"
                 }`}
               >
                 {loading ? "Creating account..." : "Sign Up"}
