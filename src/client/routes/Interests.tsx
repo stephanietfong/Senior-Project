@@ -4,7 +4,6 @@ import { SignUpBox } from "@components/SignUpBox";
 import { getAllTags } from "@lib/tags";
 import { addUserInterest } from "@lib/interests";
 import { getCurrentUser } from "@lib/users";
-import "@client/Interests.css";
 
 export const InterestsPage = () => {
   const [tags, setTags] = useState<any[]>([]);

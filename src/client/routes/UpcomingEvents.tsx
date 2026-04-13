@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { getCurrentUser } from "@lib/users";
 import { getUpcomingRSVPEventsForUser } from "@lib/rsvps";
 import { EventCard } from "@components/EventCard";
-import backarrow from "@assets/backarrow.png";
 
 export function UpcomingEventsPage() {
   const [events, setEvents] = useState<any[]>([]);
