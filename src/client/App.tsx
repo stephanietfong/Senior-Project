@@ -17,6 +17,7 @@ import { SettingsPage } from "./routes/Settings";
 import { MyEventsPage } from "./routes/MyEvents";
 import { InterestsPage } from "./routes/Interests";
 import { ProfilePage } from "./routes/Profile";
+import { ResetPasswordPage } from "./routes/resetPassword";
 
 const App = () => {
   return (
@@ -44,6 +45,7 @@ const App = () => {
             <Route path="/verification" element={<VerificationPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/contact" element={<ContactUsPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Routes>
         </main>
         <Footer />
