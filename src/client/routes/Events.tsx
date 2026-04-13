@@ -60,15 +60,19 @@ export const EventsPage = () => {
   }, []);
 
   function handleSearch(): void {
-    const newEvents = events.filter(
-      (e) =>
-        (e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          e.summary.toLowerCase().includes(searchTerm.toLowerCase())) &&
-        (searchTags.length === 0 ||
-          e.event_tags.some((tagObj: any) =>
-            searchTags.includes(tagObj.tags.tag_name),
-          )),
-    );
+    const newEvents = events.filter((e) => {
+      const matchesText =
+        e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        e.summary.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesTags =
+        searchTags.length === 0 ||
+        e.event_tags?.some((tagObj: any) =>
+          searchTags.includes(tagObj.tags?.tag_name),
+        );
+
+      return matchesText && matchesTags;
+    });
 
     setDisplayedEvents(newEvents);
     setCurrentPage(1);
@@ -127,7 +131,11 @@ export const EventsPage = () => {
           onClick={() => setIsFiltersOpen(false)}
         >
           <div onClick={(e) => e.stopPropagation()}>
-            <Filters>
+            <Filters
+              tags={tags}
+              selectedTags={searchTags}
+              setSelectedTags={setSearchTags}
+            >
               <button
                 className="mt-4 rounded-md bg-customDarkBlue px-4 py-2 font-semibold"
                 onClick={() => setIsFiltersOpen(false)}
