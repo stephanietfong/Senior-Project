@@ -159,6 +159,26 @@ export const updateEvent = async (
   return data;
 };
 
+// DELETE EVENT
+export const deleteEvent = async (eventId: string) => {
+  const { error } = await supabase
+    .from("events")
+    .delete()
+    .eq("event_id", eventId);
+
+  if (error) throw error;
+};
+
+// REMOVE ALL TAGS FROM AN EVENT
+export const removeAllTagsFromEvent = async (eventId: string) => {
+  const { error } = await supabase
+    .from("event_tags")
+    .delete()
+    .eq("event_id", eventId);
+
+  if (error) throw error;
+};
+
 // ADD TAG TO EVENT
 export const addTagToEvent = async (eventId: string, tagId: string) => {
   const { data, error } = await supabase
