@@ -65,17 +65,14 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export function FAQPage() {
   return (
-    <div className="py-4 px-20 text-black">
-      <div className="my-10 flex items-center justify-between">
-        <p className="font-oswald text-5xl">FAQ</p>
-
-        <button
-          className="bg-customDarkBlue py-2 px-4 font-semibold hover:opacity-90"
-          onClick={() => window.history.back()}
-        >
-          ← Back
-        </button>
-      </div>
+    <div className="py-10 px-20 text-black">
+      <button
+        className="bg-customDarkBlue button-style hover:opacity-90"
+        onClick={() => window.history.back()}
+      >
+        ← Back
+      </button>
+      <p className="subheader-text pb-10 text-center">FAQ</p>
 
       <div className="mx-auto w-full max-w-6xl flex flex-col gap-6">
         {FAQS.map((item, idx) => (

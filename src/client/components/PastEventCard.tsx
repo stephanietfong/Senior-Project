@@ -48,7 +48,7 @@ export const PastEventCard: React.FC<Props> = ({ event }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-[900px] grid grid-cols-[160px,1fr,180px] gap-6 p-5 bg-white text-black font-redhat rounded-2xl border border-black/10 shadow-sm">
+    <div className="w-full grid grid-cols-[160px,1fr,180px] gap-6 p-5 bg-white text-black font-redhat rounded-2xl border border-black/10 shadow-sm">
       {/* Image */}
       <div className="w-full h-full">
         <ImageBox src={event.imageSrc} alt={event.title} />

@@ -24,7 +24,9 @@ function daysAgoText(endTimeIso: string) {
 function daysUntilText(startTimeIso: string) {
   const now = new Date();
   const start = new Date(startTimeIso);
-  const diff = Math.ceil((start.getTime() - now.getTime()) / (24 * 3600 * 1000));
+  const diff = Math.ceil(
+    (start.getTime() - now.getTime()) / (24 * 3600 * 1000),
+  );
   if (diff <= 0) return "Today";
   if (diff === 1) return "In 1 day";
   return `In ${diff} days`;
@@ -37,7 +39,9 @@ function mapEvent(e: any, timeText: string): PastEvent {
     description: e.summary || "—",
     daysAgoText: timeText,
     likedText: `${e.likes || 0} Like${(e.likes || 0) !== 1 ? "s" : ""}`,
-    tags: (e.event_tags || []).map((et: any) => et?.tags?.tag_name).filter(Boolean),
+    tags: (e.event_tags || [])
+      .map((et: any) => et?.tags?.tag_name)
+      .filter(Boolean),
     imageSrc: e.image_url || "",
     liked: false,
   };
@@ -87,8 +91,12 @@ export const CoordinatorViewPage = () => {
           0,
         );
 
-        setUpcomingEvents(upcoming.map((e: any) => mapEvent(e, daysUntilText(e.start_time))));
-        setPastEvents(past.map((e: any) => mapEvent(e, daysAgoText(e.end_time))));
+        setUpcomingEvents(
+          upcoming.map((e: any) => mapEvent(e, daysUntilText(e.start_time))),
+        );
+        setPastEvents(
+          past.map((e: any) => mapEvent(e, daysAgoText(e.end_time))),
+        );
         setTotalLikes(likesTotal);
       } catch (err: any) {
         setErrorMsg(err?.message || "Failed to load host profile.");
@@ -108,7 +116,7 @@ export const CoordinatorViewPage = () => {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="bg-customDarkBlue py-2 px-4 font-semibold hover:opacity-90"
+          className="button-style bg-customDarkBlue hover:bg-customDarkBlue/50"
         >
           ← Back
         </button>
@@ -121,7 +129,6 @@ export const CoordinatorViewPage = () => {
 
       {!loading && !errorMsg && (
         <div className="mx-auto w-full max-w-6xl flex flex-col gap-8">
-
           {/* Profile + Stats */}
           <div className="bg-white rounded-2xl border border-black/10 shadow-sm p-6 font-redhat">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
@@ -130,7 +137,9 @@ export const CoordinatorViewPage = () => {
                   {orgName?.[0]?.toUpperCase() || "H"}
                 </div>
                 <div>
-                  <p className="font-oswald text-4xl leading-tight">{orgName}</p>
+                  <p className="font-oswald text-4xl leading-tight">
+                    {orgName}
+                  </p>
                   <p className="mt-1 text-sm text-black/60 italic">
                     Hosting events since {hostingSince}
                   </p>
@@ -151,7 +160,9 @@ export const CoordinatorViewPage = () => {
                   </p>
                 </div>
                 <div className="rounded-2xl bg-customBrown/20 px-6 py-4 text-center">
-                  <p className="font-oswald text-4xl">{upcomingEvents.length}</p>
+                  <p className="font-oswald text-4xl">
+                    {upcomingEvents.length}
+                  </p>
                   <p className="mt-1 text-xs uppercase tracking-widest text-black/50">
                     Upcoming
                   </p>
@@ -162,7 +173,7 @@ export const CoordinatorViewPage = () => {
 
           {/* Upcoming Events */}
           <div className="bg-white rounded-2xl border border-black/10 shadow-sm p-6">
-            <p className="font-oswald text-3xl">Upcoming Events</p>
+            <p className="subheader-text">Upcoming Events</p>
             <div className="mt-6 flex flex-col gap-6">
               {upcomingEvents.map((e) => (
                 <PastEventCard key={e.id} event={e} />
@@ -185,7 +196,6 @@ export const CoordinatorViewPage = () => {
               )}
             </div>
           </div>
-
         </div>
       )}
     </div>

@@ -95,10 +95,10 @@ export const SignUpPage = () => {
   const passwordsMatch = password === confirmPassword && confirmPassword !== "";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-customBeige">
+    <div className="min-h-screen flex items-center justify-center bg-customBeige font-redhat">
       <button
         onClick={handleBack}
-        className="bg-customGreen px-4 py-2 rounded absolute top-6 left-6 flex items-center gap-1 text-sm font-medium text-black hover:opacity-60 transition-opacity cursor-pointer"
+        className="bg-customGreen button-style absolute top-6 left-6 text-sm  text-black hover:bg-customGreen/50 transition-opacity cursor-pointer"
       >
         ← Back
       </button>
@@ -211,7 +211,7 @@ export const SignUpPage = () => {
               <button
                 onClick={handleSignUp}
                 disabled={loading}
-                className={`px-10 py-2 rounded text-base font-medium transition-opacity w-full ${
+                className={`bg-customGreen px-10 py-2 rounded text-base font-medium transition-opacity mb-4 text-black w-full ${
                   loading
                     ? "bg-gray-400 text-gray-800 cursor-not-allowed"
                     : "bg-customGreen text-black hover:opacity-90 cursor-pointer"
