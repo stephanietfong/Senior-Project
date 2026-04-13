@@ -9,6 +9,7 @@ export const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [resetMsg, setResetMsg] = useState<string | null>(null);
 
   const handleLogin = async () => {
     setErrorMsg(null);
@@ -29,6 +30,22 @@ export const LoginPage = () => {
       setErrorMsg(err.message || String(err));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setErrorMsg(null);
+    setResetMsg(null);
+    if (!email.trim()) return setErrorMsg("Enter your email above first.");
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setResetMsg("Check your email for a password reset link.");
+    } catch (err: any) {
+      setErrorMsg(err.message || String(err));
     }
   };
 
@@ -100,9 +117,15 @@ export const LoginPage = () => {
             <p className="text-sm text-red-600 text-center mb-4">{errorMsg}</p>
           )}
 
-          <p className="text-center text-sm text-black cursor-pointer hover:underline hover:opacity-80">
+          <p 
+            onClick={handleForgotPassword}
+            className="text-center text-sm text-black cursor-pointer hover:underline hover:opacity-80"
+          >
             Forgot your password?
           </p>
+          {resetMsg && (
+            <p className="text-sm text-green-600 text-center mt-2">{resetMsg}</p>
+          )}
         </div>
       </SignUpBox>
     </div>
