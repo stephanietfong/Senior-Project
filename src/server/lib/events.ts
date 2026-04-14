@@ -14,7 +14,7 @@ export const getAllEvents = async () => {
       `,
     )
     .gte("start_time", nowISO)
-    .lt("report_count", 5)
+    .or("report_count.lt.5,report_count.is.null")
     .order("start_time", { ascending: true });
   if (error) throw error;
   return data;
