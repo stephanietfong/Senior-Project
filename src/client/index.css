@@ -11,7 +11,8 @@
 
 @font-face {
   font-family: "RopestBlack";
-  src: url("./assets/fonts/RopestBlackPersonalUseOnly-vYxE.ttf") format("truetype");
+  src: url("./assets/fonts/RopestBlackPersonalUseOnly-vYxE.ttf")
+    format("truetype");
   font-weight: 400;
   font-style: normal;
 }
@@ -23,7 +24,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #FAF7ED;
+  background-color: #faf7ed;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -33,4 +34,16 @@
 
 html {
   scrollbar-gutter: stable;
+}
+
+.header-text {
+  @apply font-oswald text-6xl font-semibold;
+}
+
+.subheader-text {
+  @apply font-oswald text-4xl font-medium;
+}
+
+.button-style {
+  @apply rounded-md px-4 py-2 font-semibold;
 }

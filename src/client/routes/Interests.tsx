@@ -4,7 +4,6 @@ import { SignUpBox } from "@components/SignUpBox";
 import { getAllTags } from "@lib/tags";
 import { addUserInterest } from "@lib/interests";
 import { getCurrentUser } from "@lib/users";
-import "@client/Interests.css";
 
 export const InterestsPage = () => {
   const [tags, setTags] = useState<any[]>([]);
@@ -23,7 +22,9 @@ export const InterestsPage = () => {
 
   const toggleTag = (tagId: string) => {
     setSelectedTagIds((prev) =>
-      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId],
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId],
     );
   };
 
@@ -37,7 +38,9 @@ export const InterestsPage = () => {
     try {
       const user = await getCurrentUser();
       if (!user) throw new Error("Not logged in.");
-      await Promise.all(selectedTagIds.map((tagId) => addUserInterest(user.id, tagId)));
+      await Promise.all(
+        selectedTagIds.map((tagId) => addUserInterest(user.id, tagId)),
+      );
       navigate("/events");
     } catch (e: any) {
       setError(e.message || String(e));
@@ -52,22 +55,24 @@ export const InterestsPage = () => {
   }
 
   return (
-    <div className="sign-up-box">
+    <div className="flex justify-center items-center h-full">
       <SignUpBox>
-        <h1 className="interests-title">
+        <h1 className="font-redhat text-2xl font-semibold text-black p-10">
           Tell us what interests you so we can curate a better experience.
         </h1>
-        <h2 className="interests-subheader">Please choose at least three</h2>
+        <h2 className="flex font-redhat text-xl text-black justify-center">
+          Please choose at least three
+        </h2>
         {loading ? (
           <p style={{ textAlign: "center", padding: "20px" }}>Loading...</p>
         ) : (
           <div>
             {rows.map((row, i) => (
-              <div className="row" key={i}>
+              <div className="flex justify-center" key={i}>
                 {row.map((tag) => (
                   <button
                     key={tag.tag_id}
-                    className="interest-button"
+                    className="bg-customGray text-black border-none w-[200px] rounded p-4 text-xl font-redhat cursor-pointer m-3"
                     style={
                       selectedTagIds.includes(tag.tag_id)
                         ? { backgroundColor: "#BAC67A" }
@@ -81,11 +86,13 @@ export const InterestsPage = () => {
               </div>
             ))}
             {error && (
-              <p style={{ color: "red", textAlign: "center", margin: "8px 0" }}>{error}</p>
+              <p style={{ color: "red", textAlign: "center", margin: "8px 0" }}>
+                {error}
+              </p>
             )}
-            <div className="row">
+            <div className="flex justify-center">
               <button
-                className="submit-button"
+                className="bg-customGreen text-black w-[200px] rounded p-4 text-xl font-redhat"
                 onClick={handleContinue}
                 disabled={saving}
                 style={{ cursor: saving ? "not-allowed" : "pointer" }}

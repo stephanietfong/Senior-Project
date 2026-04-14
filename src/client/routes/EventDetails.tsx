@@ -39,7 +39,10 @@ const formatGoogleCalendarDate = (timestamp?: string) => {
   if (Number.isNaN(parsedDate.getTime())) return null;
 
   // Google Calendar URL format requires UTC in YYYYMMDDTHHMMSSZ.
-  return parsedDate.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  return parsedDate
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
 };
 
 const buildGoogleCalendarUrl = (event: any, userEmail?: string) => {
@@ -134,10 +137,7 @@ export const EventDetails = () => {
   const handleAddInterest = async () => {
     try {
       if (id) {
-        await createOrUpdateRSVP(
-          user.id.toString(),
-          id.toString(),
-        );
+        await createOrUpdateRSVP(user.id.toString(), id.toString());
         setInterested(true);
 
         const calendarUrl = buildGoogleCalendarUrl(event, user?.email);
@@ -157,7 +157,11 @@ export const EventDetails = () => {
       setReportDone(true);
       setReportOpen(false);
     } catch (e: any) {
-      setReportError(e.message?.includes("unique") ? "You have already reported this event." : (e.message || "Failed to submit report."));
+      setReportError(
+        e.message?.includes("unique")
+          ? "You have already reported this event."
+          : e.message || "Failed to submit report.",
+      );
     } finally {
       setReportSubmitting(false);
     }
@@ -181,16 +185,14 @@ export const EventDetails = () => {
   return (
     <div className="px-20 py-10 text-black flex flex-col justify-center items-center font-redhat gap-10">
       <button
+        type="button"
         onClick={() => navigate(-1)}
-        className="flex items-center self-start bg-transparent border-none cursor-pointer"
+        className="button-style bg-customGreen hover:bg-customGreen/50 flex items-center self-start"
       >
-        <img src={backarrow} alt="" />
-        <span className="p-4 rounded-md font-semibold">Back</span>
+        ← Back
       </button>
-      <h1 className="text-5xl font-bold w-full text-center font-oswald mt-[-40px]">
-        {event.title}
-      </h1>
-      <div className="flex flex-row h-[36rem] gap-10 items-center justify-center">
+      <h1 className="subheader-text mt-[-40px]">{event.title}</h1>
+      <div className="flex flex-row gap-10 items-center justify-center">
         {event.image_url ? (
           <img
             src={event.image_url}
@@ -202,7 +204,7 @@ export const EventDetails = () => {
             <p className="text-gray-500">No image available</p>
           </div>
         )}
-        <div className="flex flex-col p-10 gap-6 h-full">
+        <div className="flex flex-col p-10 gap-6">
           <ul className="gap-2 flex flex-col">
             <li className="flex items-center gap-2">
               <img src={bluebullet} alt="" className="w-6 h-6" />
@@ -228,12 +230,16 @@ export const EventDetails = () => {
               </p>
             </li>
           </ul>
-          <p className="bg-customGray p-8 max-w-4xl">{event.summary?.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"')}</p>
+          <p className="bg-customGray p-8 max-w-4xl">
+            {event.summary
+              ?.replace(/[\u2018\u2019]/g, "'")
+              .replace(/[\u201C\u201D]/g, '"')}
+          </p>
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4">
-        <p className="text-3xl font-medium">Location</p>
+      <div className="flex flex-col items-center gap-6">
+        <p className="subheader-text">Location</p>
         {mapEmbedUrl ? (
           <iframe
             title="Event location map"
@@ -254,23 +260,35 @@ export const EventDetails = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-customBeige rounded-2xl border border-black/10 shadow-lg p-8 w-full max-w-md flex flex-col gap-4">
             <h2 className="font-oswald text-2xl">Report Event</h2>
-            <p className="font-redhat text-sm text-black/60">Select a reason for reporting this event.</p>
+            <p className="font-redhat text-sm text-black/60">
+              Select a reason for reporting this event.
+            </p>
             <select
               value={reportReason}
               onChange={(e) => setReportReason(e.target.value)}
               className="w-full rounded-xl border border-black/15 bg-white px-4 py-3 font-redhat text-base outline-none"
             >
               <option value="">Select a reason...</option>
-              <option value="Inappropriate content">Inappropriate content</option>
+              <option value="Inappropriate content">
+                Inappropriate content
+              </option>
               <option value="Spam">Spam</option>
               <option value="Offensive image">Offensive image</option>
-              <option value="Misleading information">Misleading information</option>
+              <option value="Misleading information">
+                Misleading information
+              </option>
               <option value="Other">Other</option>
             </select>
-            {reportError && <p className="text-sm text-red-600">{reportError}</p>}
+            {reportError && (
+              <p className="text-sm text-red-600">{reportError}</p>
+            )}
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => { setReportOpen(false); setReportReason(""); setReportError(null); }}
+                onClick={() => {
+                  setReportOpen(false);
+                  setReportReason("");
+                  setReportError(null);
+                }}
                 className="px-5 py-2 rounded-full border border-black/15 font-semibold hover:opacity-80"
               >
                 Cancel
@@ -288,20 +306,23 @@ export const EventDetails = () => {
       )}
 
       {reportDone && (
-        <p className="text-sm text-green-600 font-redhat">Thank you — your report has been submitted.</p>
+        <p className="text-sm text-green-600 font-redhat">
+          Thank you — your report has been submitted.
+        </p>
       )}
 
       <div className="flex flex-col items-center gap-3">
         {interested ? (
           <button
-            className="bg-customGreen text-white p-4 rounded font-semibold min-w-24"
+            className="button-style bg-customGreen text-white"
             onClick={() => handleRemoveInterest()}
           >
-            You've marked your interest in this event. Click to unmark your interest.
+            You've marked your interest in this event. Click to unmark your
+            interest.
           </button>
         ) : (
           <button
-            className="bg-customDarkBlue text-white p-4 rounded font-semibold min-w-24"
+            className="bg-customDarkBlue button-style text-white"
             onClick={() => handleAddInterest()}
           >
             Mark this event as Interested!

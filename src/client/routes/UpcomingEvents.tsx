@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { getCurrentUser } from "@lib/users";
 import { getUpcomingRSVPEventsForUser } from "@lib/rsvps";
 import { EventCard } from "@components/EventCard";
-import backarrow from "@assets/backarrow.png";
 
 export function UpcomingEventsPage() {
   const [events, setEvents] = useState<any[]>([]);
@@ -35,16 +34,8 @@ export function UpcomingEventsPage() {
   }, []);
 
   return (
-    <div className="py-4 px-20 text-black">
-      <a className="flex items-center self-start" href="/events">
-        <img src={backarrow} alt="" />
-        <span className="p-4 rounded-md font-semibold self-start">
-          Back to All Events
-        </span>
-      </a>
-      <h1 className="text-5xl font-bold w-full text-center font-oswald mt-[-40px] mb-10">
-        My Interested Events
-      </h1>
+    <div className="py-10 px-20 text-black">
+      <h1 className="subheader-text text-center">My Interested Events</h1>
 
       {loading && <p className="text-sm text-black/60">Loading…</p>}
       {!loading && errorMsg && (

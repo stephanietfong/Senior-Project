@@ -6,7 +6,6 @@ import { createEvent, addTagToEvent } from "@lib/events";
 import { getCurrentUser } from "@lib/users";
 import { supabase } from "../supabaseClient";
 
-
 export const CreateEventPage = () => {
   const [tags, setTags] = useState<any[]>([]);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
@@ -38,15 +37,15 @@ export const CreateEventPage = () => {
 
       let imageUrl = "";
       if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
+        const fileExt = imageFile.name.split(".").pop();
         const fileName = `${Date.now()}.${fileExt}`;
         const { data, error } = await supabase.storage
-          .from('Event Images')
+          .from("Event Images")
           .upload(fileName, imageFile);
         if (error) throw error;
-        const { data: { publicUrl } } = supabase.storage
-          .from('Event Images')
-          .getPublicUrl(fileName);
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("Event Images").getPublicUrl(fileName);
         imageUrl = publicUrl;
       }
 
@@ -78,33 +77,16 @@ export const CreateEventPage = () => {
     setSelectedTags((prev) =>
       prev.includes(tagId)
         ? prev.filter((id) => id !== tagId)
-        : [...prev, tagId]
+        : [...prev, tagId],
     );
   };
-  const styles = `
-    .create-event-page {
-      color: black;
-      font-family: Sans-Serif;
-    }
 
-    .create-event-page h1 {
-      font-size: 24px;
-      font-weight: bold;
-      text-align: center;
-      margin-top: 40px;
-    }
-
-    .create-event-page h2 {
-      font-size: 18px;
-    }
-    `;
   return (
     <>
-      <style>{styles}</style>
-      <div className="create-event-page">
+      <div className="py-10 px-20 text-black font-redhat flex flex-col items-center justify-center">
         {/* <Link to="/"><button>Back</button></Link> */}
-        <form onSubmit={handleSubmit} style={{ padding: 20 }}>
-          <h1 style={{ marginTop: 0 }}>Basic Info</h1>
+        <form onSubmit={handleSubmit}>
+          <h1 className="subheader-text text-center">Basic Info</h1>
           <div
             style={{
               display: "flex",
@@ -122,7 +104,7 @@ export const CreateEventPage = () => {
               style={{
                 backgroundColor: "lightgray",
                 borderRadius: "5px",
-                width: "40%",
+                width: "100%",
               }}
             />
             <h2>Event Summary</h2>
@@ -132,7 +114,7 @@ export const CreateEventPage = () => {
               style={{
                 backgroundColor: "lightgray",
                 borderRadius: "5px",
-                width: "40%",
+                width: "100%",
                 height: 100,
               }}
             />
@@ -159,7 +141,8 @@ export const CreateEventPage = () => {
               ))}
             </div>
           </div>
-          <h1>Date & Time</h1>
+
+          <h1 className="subheader-text py-10 text-center">Date & Time</h1>
           <div
             style={{
               display: "flex",
@@ -210,8 +193,9 @@ export const CreateEventPage = () => {
               />
             </div>
           </div>
+
           <div>
-            <h1>Location</h1>
+            <h1 className="subheader-text text-center py-10">Location</h1>
             <h2>Location Name</h2>
             <input
               type="text"
@@ -220,7 +204,7 @@ export const CreateEventPage = () => {
               style={{
                 backgroundColor: "lightgray",
                 borderRadius: "5px",
-                width: "40%",
+                width: "100%",
                 margin: "10px 0",
               }}
             />
@@ -232,11 +216,12 @@ export const CreateEventPage = () => {
               style={{
                 backgroundColor: "lightgray",
                 borderRadius: "5px",
-                width: "40%",
+                width: "100%",
                 marginTop: 10,
               }}
             />
-            <h1>Details</h1>
+
+            <h1 className="subheader-text text-center py-10">Details</h1>
             <h2>Description</h2>
             <textarea
               value={description}
@@ -244,7 +229,7 @@ export const CreateEventPage = () => {
               style={{
                 backgroundColor: "lightgray",
                 borderRadius: "5px",
-                width: "40%",
+                width: "100%",
                 height: 100,
               }}
             />
@@ -264,7 +249,7 @@ export const CreateEventPage = () => {
               style={{
                 backgroundColor: "lightgray",
                 borderRadius: "5px",
-                width: "40%",
+                width: "100%",
                 marginTop: 10,
               }}
             />
@@ -290,21 +275,13 @@ export const CreateEventPage = () => {
             <button
               type="button"
               onClick={() => navigate("/events")}
-              style={{
-                backgroundColor: "#BAC67A",
-                padding: "10px 20px",
-                borderRadius: "5px",
-              }}
+              className="button-style bg-customGreen hover:bg-customGreen/50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              style={{
-                backgroundColor: "#7793C2",
-                padding: "10px 20px",
-                borderRadius: "5px",
-              }}
+              className="button-style bg-customBlue hover:bg-customBlue/50"
             >
               Create Event
             </button>

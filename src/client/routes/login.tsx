@@ -44,20 +44,15 @@ export const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-customBeige">
       <button
         onClick={handleBack}
-        className="bg-customGreen px-4 py-2 rounded absolute top-6 left-6 flex items-center gap-1 text-sm font-medium text-black hover:opacity-60 transition-opacity cursor-pointer"
+        className="bg-customGreen button-style absolute top-6 left-6 text-sm  text-black hover:bg-customGreen/50 transition-opacity cursor-pointer"
       >
         ← Back
       </button>
       <SignUpBox>
         <div className="relative flex flex-col items-center justify-center h-full px-16">
-          <h1
-            className="text-3xl mb-10 text-black text-center font-semibold"
-            style={{ letterSpacing: "0.04em" }}
-          >
-            Sign into your account
-          </h1>
+          <h1 className="subheader-text text-black p-10">Log Into Account</h1>
 
-          <div className="w-full mb-5">
+          <div className="w-full mb-6 font-redhat">
             <label className="block text-black text-base mb-1">Email</label>
             <input
               type="email"
@@ -68,7 +63,7 @@ export const LoginPage = () => {
             />
           </div>
 
-          <div className="w-full mb-8 relative group">
+          <div className="w-full mb-6 relative group font-redhat">
             <label className="block text-black text-base mb-1">Password</label>
             <input
               type={showPassword ? "text" : "password"}
@@ -85,12 +80,14 @@ export const LoginPage = () => {
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
-    
+
           <button
             onClick={handleLogin}
             disabled={loading}
             className={`bg-customGreen px-10 py-2 rounded text-base font-medium transition-opacity mb-4 text-black w-full ${
-              loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
+              loading
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-customGreen/50"
             }`}
           >
             {loading ? "Logging in..." : "Log in"}
