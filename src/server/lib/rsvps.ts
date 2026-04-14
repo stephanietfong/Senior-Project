@@ -7,7 +7,7 @@ export const getRSVPsForEvent = async (eventId: string) => {
     .select(
       `
       *,
-      user:users(user_id, display_name)
+      user:users(user_id, display_name, email)
     `,
     )
     .eq("event_id", eventId);

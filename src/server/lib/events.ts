@@ -14,7 +14,7 @@ export const getAllEvents = async () => {
       `,
     )
     .gte("start_time", nowISO)
-    .lt("report_count", 5)
+    .or("report_count.lt.5,report_count.is.null")
     .order("start_time", { ascending: true });
   if (error) throw error;
   return data;
@@ -157,6 +157,26 @@ export const updateEvent = async (
 
   if (error) throw error;
   return data;
+};
+
+// DELETE EVENT
+export const deleteEvent = async (eventId: string) => {
+  const { error } = await supabase
+    .from("events")
+    .delete()
+    .eq("event_id", eventId);
+
+  if (error) throw error;
+};
+
+// REMOVE ALL TAGS FROM AN EVENT
+export const removeAllTagsFromEvent = async (eventId: string) => {
+  const { error } = await supabase
+    .from("event_tags")
+    .delete()
+    .eq("event_id", eventId);
+
+  if (error) throw error;
 };
 
 // ADD TAG TO EVENT

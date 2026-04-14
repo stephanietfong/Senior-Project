@@ -18,6 +18,7 @@ import { MyEventsPage } from "./routes/MyEvents";
 import { InterestsPage } from "./routes/Interests";
 import { ProfilePage } from "./routes/Profile";
 import { ResetPasswordPage } from "./routes/resetPassword";
+import { EditEventPage } from "./routes/EditEvent";
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/my-events" element={<MyEventsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/edit-event/:id" element={<EditEventPage />} />
             </Route>
             <Route
               path="/coordinator/:hostId"
